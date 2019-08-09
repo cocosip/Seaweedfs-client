@@ -1,0 +1,91 @@
+﻿using Seaweedfs.Client.Extensions;
+
+namespace Seaweedfs.Client.Rest
+{
+    /// <summary>预分配Volumes请求
+    /// </summary>
+    public class PreAllocateVolumesRequest : ISeaweedfsRequest<PreAllocateVolumesResponse>
+    {
+        /// <summary>数量
+        /// </summary>
+        public int Count { get; set; } = 1;
+
+        /// <summary>数据中心
+        /// </summary>
+        public string DataCenter { get; set; }
+
+        /// <summary>Replication
+        /// </summary>
+        public string Replication { get; set; }
+
+        /// <summary>Collection
+        /// </summary>
+        public string Collection { get; set; }
+
+        /// <summary>时效
+        /// </summary>
+        public string Ttl { get; set; }
+
+        /// <summary>Ctor
+        /// </summary>
+        public PreAllocateVolumesRequest()
+        {
+
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public PreAllocateVolumesRequest(int count)
+        {
+            Count = count;
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public PreAllocateVolumesRequest(string dataCenter)
+        {
+            DataCenter = dataCenter;
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        /// <param name="replication">复制策略</param>
+        /// <param name="count">数量</param>
+        /// <param name="dataCenter">数据中心</param>
+        /// <param name="ttl">时效</param>
+        public PreAllocateVolumesRequest(string replication, int count, string dataCenter, string ttl)
+        {
+            Replication = replication;
+            Count = count;
+            DataCenter = dataCenter;
+            Ttl = ttl;
+        }
+
+
+
+        /// <summary>创建HttpBuilder
+        /// </summary>
+        public HttpBuilder CreateBuilder()
+        {
+            var builder = new HttpBuilder("/vol/grow", Method.GET);
+            builder.AddParameter("Count", Count, ParameterType.QueryString);
+            if (!DataCenter.IsNullOrWhiteSpace())
+            {
+                builder.AddParameter("DataCenter", DataCenter, ParameterType.QueryString);
+            }
+            if (!Replication.IsNullOrWhiteSpace())
+            {
+                builder.AddParameter("Replication", Replication, ParameterType.QueryString);
+            }
+            if (!Collection.IsNullOrWhiteSpace())
+            {
+                builder.AddParameter("Collection", Collection, ParameterType.QueryString);
+            }
+            if (!Ttl.IsNullOrWhiteSpace())
+            {
+                builder.AddParameter("Ttl", Ttl, ParameterType.QueryString);
+            }
+            return builder;
+        }
+    }
+}

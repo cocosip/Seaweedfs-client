@@ -1,0 +1,20 @@
+﻿namespace Seaweedfs.Client.Rest
+{
+    /// <summary>删除集合请求
+    /// </summary>
+    public class DeleteCollectionRequest : ISeaweedfsRequest<DeleteCollectionResponse>
+    {
+        /// <summary>集合名
+        /// </summary>
+        public string Collection { get; set; }
+
+        /// <summary>创建HttpBuilder
+        /// </summary>
+        public HttpBuilder CreateBuilder()
+        {
+            var builder = new HttpBuilder("/col/delete", Method.DELETE);
+            builder.AddParameter("Collection", Collection, ParameterType.QueryString);
+            return builder;
+        }
+    }
+}
