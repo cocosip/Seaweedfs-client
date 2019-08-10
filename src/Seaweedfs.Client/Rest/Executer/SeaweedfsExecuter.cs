@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using RestSharp;
 using Seaweedfs.Client.Serializing;
+using System;
 using System.Threading.Tasks;
 
 namespace Seaweedfs.Client.Rest
@@ -27,9 +28,28 @@ namespace Seaweedfs.Client.Rest
         {
             var builder = request.CreateBuilder();
             IRestRequest restRequest = builder.BuildRequest();
-            var response = await connection.Client.ExecuteTaskAsync(restRequest);
-            var t = _jsonSerializer.Deserialize<T>(response.Content);
-            return t;
+            var response = await connection.ExecuteAsync(restRequest);
+            if (response.IsSuccessful)
+            {
+                try
+                {
+                    var t = _jsonSerializer.Deserialize<T>(response.Content);
+                    t.IsSuccessful = true;
+                    return t;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "执行Seaweedfs请求,对返回值反序列化失败,{0}", ex.Message);
+                    var t = default(T);
+                    t.IsSuccessful = false;
+                    return t;
+                }
+            }
+            else
+            {
+                _logger.LogError(response.ErrorException, "执行Seaweedfs请求返回值为:{0}", response.ErrorMessage);
+                throw response.ErrorException;
+            }
         }
     }
 }

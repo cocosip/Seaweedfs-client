@@ -1,16 +1,14 @@
-﻿using Seaweedfs.Client.Extensions;
+using Seaweedfs.Client.Extensions;
 using System;
 using System.IO;
+
 namespace Seaweedfs.Client.Rest
 {
-    /// <summary>上传文件请求
-    /// </summary>
-    public class UploadFileRequest : ISeaweedfsRequest<UploadFileResponse>
-    {
-        /// <summary>文件Id
-        /// </summary>
-        public string Fid { get; set; }
 
+    /// <summary>直接上传文件请求
+    /// </summary>
+    public class UploadFileDirectlyRequest : ISeaweedfsRequest<UploadFileDirectlyResponse>
+    {
         /// <summary>文件名
         /// </summary>
         public string FileName { get; set; }
@@ -33,54 +31,47 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>Ctor
         /// </summary>
-        public UploadFileRequest()
+        public UploadFileDirectlyRequest()
         {
 
         }
 
         /// <summary>Ctor
         /// </summary>
-        /// <param name="fid">文件Fid</param>
         /// <param name="filePath">本地文件路径</param>
-        public UploadFileRequest(string fid, string filePath)
+        public UploadFileDirectlyRequest(string filePath)
         {
-            Fid = fid;
             FilePath = filePath;
         }
 
         /// <summary>Ctor
         /// </summary>
-        /// <param name="fid">文件Fid</param>
         /// <param name="fileBytes">文件二进制</param>
         /// <param name="fileName">文件名</param>
-        public UploadFileRequest(string fid, byte[] fileBytes, string fileName)
+        public UploadFileDirectlyRequest(byte[] fileBytes, string fileName)
         {
-            Fid = fid;
             FileBytes = fileBytes;
             FileName = fileName;
         }
 
         /// <summary>Ctor
         /// </summary>
-        /// <param name="fid">文件Fid</param>
         /// <param name="writer">文件流写入</param>
         /// <param name="fileName">文件名</param>
         /// <param name="contentLength">文件长度</param>
-        public UploadFileRequest(string fid, Action<Stream> writer, string fileName, long contentLength)
+        public UploadFileDirectlyRequest(Action<Stream> writer, string fileName, long contentLength)
         {
-            Fid = fid;
             Writer = writer;
             FileName = fileName;
             ContentLength = contentLength;
         }
 
 
-
         /// <summary>创建HttpBuilder
         /// </summary>
         public HttpBuilder CreateBuilder()
         {
-            var builder = new HttpBuilder(Fid, Method.POST);
+            var builder = new HttpBuilder("/submit", Method.POST);
             if (!FilePath.IsNullOrWhiteSpace())
             {
                 builder.AddFile("file", FilePath);

@@ -63,6 +63,9 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
+# .vscode
+.vscode/
+
 # StyleCop
 StyleCopReport.xml
 
@@ -208,6 +211,9 @@ csx/
 # Microsoft Azure Emulator
 ecf/
 rcf/
+
+# cake
+tools/
 
 # Windows Store app package directories and files
 AppPackages/

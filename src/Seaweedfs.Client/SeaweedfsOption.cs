@@ -14,6 +14,10 @@ namespace Seaweedfs.Client
         /// </summary>
         public string Schema { get; set; } = "http";
 
+        /// <summary>同步Master中Leader的时间间隔,以s为单位
+        /// </summary>
+        public int SyncMasterLeaderInterval { get; set; } = 30;
+
         /// <summary>日志名称
         /// </summary>
         public string LoggerName { get; set; } = "SeaweedfsLogger";

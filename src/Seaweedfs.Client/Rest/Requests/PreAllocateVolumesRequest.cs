@@ -6,6 +6,7 @@ namespace Seaweedfs.Client.Rest
     /// </summary>
     public class PreAllocateVolumesRequest : ISeaweedfsRequest<PreAllocateVolumesResponse>
     {
+
         /// <summary>数量
         /// </summary>
         public int Count { get; set; } = 1;
@@ -18,13 +19,14 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public string Replication { get; set; }
 
+        /// <summary>时效
+        /// </summary>
+        public string Ttl { get; set; }
+
         /// <summary>Collection
         /// </summary>
         public string Collection { get; set; }
 
-        /// <summary>时效
-        /// </summary>
-        public string Ttl { get; set; }
 
         /// <summary>Ctor
         /// </summary>
@@ -61,6 +63,16 @@ namespace Seaweedfs.Client.Rest
             Ttl = ttl;
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        public PreAllocateVolumesRequest(int count, string dataCenter, string replication, string ttl, string collection)
+        {
+            Count = count;
+            DataCenter = dataCenter;
+            Replication = replication;
+            Ttl = ttl;
+            Collection = collection;
+        }
 
 
         /// <summary>创建HttpBuilder

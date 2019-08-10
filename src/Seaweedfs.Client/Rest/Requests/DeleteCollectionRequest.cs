@@ -4,9 +4,24 @@
     /// </summary>
     public class DeleteCollectionRequest : ISeaweedfsRequest<DeleteCollectionResponse>
     {
+
         /// <summary>集合名
         /// </summary>
         public string Collection { get; set; }
+
+        /// <summary>Ctor
+        /// </summary>
+        public DeleteCollectionRequest()
+        {
+
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public DeleteCollectionRequest(string collection)
+        {
+            Collection = collection;
+        }
 
         /// <summary>创建HttpBuilder
         /// </summary>

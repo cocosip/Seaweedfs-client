@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Seaweedfs.Client\Seaweedfs.Client.csproj" />
+  </ItemGroup>
+
 </Project>

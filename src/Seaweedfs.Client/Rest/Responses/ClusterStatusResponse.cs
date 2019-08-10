@@ -6,7 +6,7 @@ namespace Seaweedfs.Client.Rest
     /// </summary>
     public class ClusterStatusResponse : SeaweedfsResponse
     {
-        /// <summary>是否为地址
+        /// <summary>是否为Leader
         /// </summary>
         public bool IsLeader { get; set; }
 

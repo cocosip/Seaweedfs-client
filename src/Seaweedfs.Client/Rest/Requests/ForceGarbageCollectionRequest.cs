@@ -9,6 +9,21 @@
         public decimal? GarbageThreshold { get; set; }
 
 
+        /// <summary>Ctor
+        /// </summary>
+        public ForceGarbageCollectionRequest()
+        {
+
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public ForceGarbageCollectionRequest(decimal? garbageThreshold)
+        {
+            GarbageThreshold = garbageThreshold;
+        }
+
+
         /// <summary>创建HttpBuilder
         /// </summary>
         public HttpBuilder CreateBuilder()

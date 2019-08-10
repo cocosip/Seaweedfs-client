@@ -29,6 +29,15 @@ namespace Seaweedfs.Client.Rest
             Port = port;
         }
 
+        /// <summary>Ctor
+        /// </summary>
+        public ConnectionAddress(string iPAddressWithPort)
+        {
+            var array = iPAddressWithPort.Split(':');
+            IPAddress = array[0];
+            Port = int.Parse(array[1]);
+        }
+
 
         /// <summary>重写Equals方法
         /// </summary>
@@ -42,7 +51,7 @@ namespace Seaweedfs.Client.Rest
             {
                 return false;
             }
-            ConnectionAddress connectionAddress = (ConnectionAddress)obj;
+            ConnectionAddress connectionAddress = (ConnectionAddress) obj;
             return IPAddress.Equals(connectionAddress.IPAddress) && Port.Equals(connectionAddress.Port);
         }
 
@@ -51,6 +60,13 @@ namespace Seaweedfs.Client.Rest
         public override int GetHashCode()
         {
             return IPAddress.GetHashCode() ^ Port.GetHashCode();
+        }
+
+        /// <summary>重写ToString方法
+        /// </summary>
+        public override string ToString()
+        {
+            return $"{IPAddress}:{Port}";
         }
     }
 }

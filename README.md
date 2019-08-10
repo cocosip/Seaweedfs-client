@@ -1,1 +1,3 @@
-# Seaweedfs.Client 是seaweedfs的 c#客户端
+# Seaweedfs-client
+
+> Seaweedfs的c#客户端

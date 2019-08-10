@@ -18,6 +18,22 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public string Fid { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
+        public LookupVolumeRequest()
+        {
+
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public LookupVolumeRequest(string volumeId, string collection, string fid)
+        {
+            VolumeId = volumeId;
+            Collection = collection;
+            Fid = fid;
+        }
+
         /// <summary>创建HttpBuilder
         /// </summary>
         public HttpBuilder CreateBuilder()

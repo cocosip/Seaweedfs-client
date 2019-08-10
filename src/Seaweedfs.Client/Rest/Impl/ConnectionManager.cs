@@ -37,6 +37,13 @@ namespace Seaweedfs.Client.Rest
             _seaweedfsExecuter = seaweedfsExecuter;
         }
 
+        /// <summary>获取Master连接
+        /// </summary>
+        public Connection GetMasterConnection()
+        {
+            return _masterConnection;
+        }
+
 
         /// <summary>运行
         /// </summary>
@@ -49,7 +56,8 @@ namespace Seaweedfs.Client.Rest
 
             //使用第一台服务器作为Leader
             _masterConnection = CreateDefaultMasterConnection();
-
+            //Master Leader同步
+            StartSyncMasterLeaderTask();
         }
 
 
@@ -57,7 +65,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public void Shutdown()
         {
-
+            StopSyncMasterLeaderTask();
         }
 
 
@@ -79,14 +87,21 @@ namespace Seaweedfs.Client.Rest
             return _connectionFactory.CreateConnection(connectionAddress, ConnectionType.Master);
         }
 
-        /// <summary>同步master中Leader的任务
+        /// <summary>开始同步Master中Leader的任务
         /// </summary>
         private void StartSyncMasterLeaderTask()
         {
-            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.SyncMasterLeader", SyncMasterLeader, 1000, 3000);
+            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.SyncMasterLeader", SyncMasterLeader, 1000, _option.SyncMasterLeaderInterval);
         }
 
-        /// <summary>同步集群中Master的请求
+        /// <summary>结束同步Master中Leader的任务
+        /// </summary>
+        private void StopSyncMasterLeaderTask()
+        {
+            _scheduleService.StopTask($"{SeaweedfsConsts.Seaweedfs}.SyncMasterLeader");
+        }
+
+        /// <summary>同步集群中MasterLeader
         /// </summary>
         private void SyncMasterLeader()
         {
@@ -95,11 +110,38 @@ namespace Seaweedfs.Client.Rest
                 _logger.LogError("同步MasterLeader出错,当前MasterConnection为空.");
                 return;
             }
-            //查询集群中的状态
-            var request = new ClusterStatusRequest();
-            var response =  _seaweedfsExecuter.ExecuteAsync(_masterConnection, request);
+            try
+            {
+                //查询集群中的状态
+                var request = new ClusterStatusRequest();
+                //执行结果
+                var task = _seaweedfsExecuter.ExecuteAsync(_masterConnection, request);
+                task.Wait();
+                //集群状态
+                var clusterStatus = task.Result;
+                //判断集群中的Master服务器的Leader是否发生了改变
+                if (!clusterStatus.IsLeader || clusterStatus.Leader != _masterConnection.ConnectionAddress.ToString())
+                {
+                    //更新当前Master连接
+                    lock(SyncObject)
+                    {
+                        var connectionAddress = new ConnectionAddress(clusterStatus.Leader);
+                        _masterConnection = _connectionFactory.CreateConnection(connectionAddress, ConnectionType.Master);
+                    }
+                }
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var e in ex.InnerExceptions)
+                {
+                    _logger.LogError(e.InnerException, "同步MasterLeader出现线程异常,{0}", ex.Message);
+                }
 
-
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "同步MasterLeader出错,{0}", ex.Message);
+            }
 
         }
 
