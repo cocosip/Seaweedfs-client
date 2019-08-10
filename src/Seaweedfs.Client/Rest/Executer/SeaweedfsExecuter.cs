@@ -24,32 +24,33 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>执行Seaweedfs请求
         /// </summary>
-        public async Task<T> ExecuteAsync<T>(Connection connection, ISeaweedfsRequest<T> request) where T : SeaweedfsResponse
+        public async Task<T> ExecuteAsync<T>(Connection connection, ISeaweedfsRequest<T> request) where T : SeaweedfsResponse, new()
         {
             var builder = request.CreateBuilder();
             IRestRequest restRequest = builder.BuildRequest();
             var response = await connection.ExecuteAsync(restRequest);
+            var result = new T()
+            {
+                IsSuccessful = response.IsSuccessful,
+                StatusCode = response.StatusCode
+            };
+
             if (response.IsSuccessful)
             {
                 try
                 {
                     var t = _jsonSerializer.Deserialize<T>(response.Content);
-                    t.IsSuccessful = true;
+                    t.IsSuccessful = result.IsSuccessful;
+                    t.StatusCode = result.StatusCode;
                     return t;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "执行Seaweedfs请求,对返回值反序列化失败,{0}", ex.Message);
-                    var t = default(T);
-                    t.IsSuccessful = false;
-                    return t;
+                    result.IsSuccessful = false;
                 }
             }
-            else
-            {
-                _logger.LogError(response.ErrorException, "执行Seaweedfs请求返回值为:{0}", response.ErrorMessage);
-                throw response.ErrorException;
-            }
+            return result;
         }
     }
 }

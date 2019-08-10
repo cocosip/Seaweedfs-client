@@ -55,7 +55,7 @@ namespace Seaweedfs.Client.Rest
             }
 
             //使用第一台服务器作为Leader
-            _masterConnection = CreateDefaultMasterConnection();
+            _masterConnection = CreateMasterConnection();
             //Master Leader同步
             StartSyncMasterLeaderTask();
         }
@@ -71,9 +71,14 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>创建默认的Master连接
         /// </summary>
-        private Connection CreateDefaultMasterConnection()
+        private Connection CreateMasterConnection(ConnectionAddress exceptMaster = null)
         {
-            var master = _option.Masters.FirstOrDefault();
+            var masterServers = _option.Masters;
+            if (exceptMaster != null)
+            {
+                masterServers = masterServers.Where(x => x.IPAddress != exceptMaster.IPAddress && x.Port != exceptMaster.Port).ToList();
+            }
+            var master = masterServers.FirstOrDefault();
             if (master == null)
             {
                 throw new ArgumentException("配置文件中不包含任何Master节点的配置.");
@@ -119,6 +124,13 @@ namespace Seaweedfs.Client.Rest
                 task.Wait();
                 //集群状态
                 var clusterStatus = task.Result;
+                if (!clusterStatus.IsSuccessful)
+                {
+                    //如果不成功,Master可能废了,需要构建新的
+                    _masterConnection = CreateMasterConnection(_masterConnection.ConnectionAddress);
+                    SyncMasterLeader();
+                    return;
+                }
                 //判断集群中的Master服务器的Leader是否发生了改变
                 if (!clusterStatus.IsLeader || clusterStatus.Leader != _masterConnection.ConnectionAddress.ToString())
                 {
