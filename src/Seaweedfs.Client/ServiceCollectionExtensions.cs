@@ -38,8 +38,8 @@ namespace Seaweedfs.Client
                 .AddSingleton<IConnectionFactory, ConnectionFactory>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()
                 .AddSingleton<SeaweedfsOption>(option)
-                .AddTransient<ISeaweedfsClient, SeaweedfsClient>()
-                .AddTransient<ISeaweedfsExecuter, SeaweedfsExecuter>();
+                .AddTransient<ISeaweedfsExecuter, SeaweedfsExecuter>()
+                .AddTransient<ISeaweedfsClient, SeaweedfsClient>();
             return services;
         }
 

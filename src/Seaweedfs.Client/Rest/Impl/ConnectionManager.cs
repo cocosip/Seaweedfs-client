@@ -38,7 +38,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public ConnectionManager(ILoggerFactory loggerFactory, IScheduleService scheduleService, SeaweedfsOption option, IConnectionFactory connnectionFactory, ISeaweedfsExecuter seaweedfsExecuter)
         {
-            _logger = loggerFactory.CreateLogger(option.LoggerName);
+            _logger = loggerFactory.CreateLogger(SeaweedfsConsts.LoggerName);
             _scheduleService = scheduleService;
             _option = option;
             _connectionFactory = connnectionFactory;
@@ -54,7 +54,7 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>根据AssignFileKeyResponse获取Volume连接
         /// </summary>
-        public Connection GetVolumeConnectionByAssignFileKey(AssignFileKeyResponse assignFileKey)
+        public Connection GetVolumeConnectionByAssignFileKey(AssignFileKey assignFileKey)
         {
             return GetVolumeConnectionInternal(new ConnectionAddress(assignFileKey.Url));
         }

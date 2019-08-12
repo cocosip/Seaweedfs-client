@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Seaweedfs.Client.Util;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -8,13 +9,15 @@ namespace Seaweedfs.Client.Rest
     /// </summary>
     public class SeaweedfsClient : ISeaweedfsClient
     {
+        private readonly SeaweedfsOption _option;
         private readonly IConnectionManager _connectionManager;
         private readonly ISeaweedfsExecuter _seaweedfsExecuter;
 
         /// <summary>Ctor
         /// </summary>
-        public SeaweedfsClient(IConnectionManager connectionManager, ISeaweedfsExecuter seaweedfsExecuter)
+        public SeaweedfsClient(IConnectionManager connectionManager, ISeaweedfsExecuter seaweedfsExecuter, SeaweedfsOption option)
         {
+            _option = option;
             _connectionManager = connectionManager;
             _seaweedfsExecuter = seaweedfsExecuter;
         }
@@ -107,39 +110,39 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>上传文件
         /// </summary>
-        /// <param name="fid">文件Fid</param>
+        /// <param name="assignFileKey">文件Fid</param>
         /// <param name="filePath">文件本地路径</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
-        public async Task<UploadFileResponse> UploadFile(string fid, string filePath)
+        public async Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, string filePath)
         {
-            var request = new UploadFileRequest(fid, filePath);
-            return await UploadInternal(request);
+            var request = new UploadFileRequest(assignFileKey.Fid, filePath);
+            return await UploadInternal(assignFileKey, request);
         }
 
         /// <summary>上传文件
         /// </summary>
-        /// <param name="fid">文件Fid</param>
+        /// <param name="assignFileKey">文件Fid</param>
         /// <param name="fileBytes">文件二进制</param>
         /// <param name="fileName">文件名</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
-        public async Task<UploadFileResponse> UploadFile(string fid, byte[] fileBytes, string fileName)
+        public async Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, byte[] fileBytes, string fileName)
         {
-            var request = new UploadFileRequest(fid, fileBytes, fileName);
-            return await UploadInternal(request);
+            var request = new UploadFileRequest(assignFileKey.Fid, fileBytes, fileName);
+            return await UploadInternal(assignFileKey, request);
         }
 
 
         /// <summary>上传文件
         /// </summary>
-        /// <param name="fid">文件Fid</param>
+        /// <param name="assignFileKey">文件Fid</param>
         /// <param name="writer">文件写入方法</param>
         /// <param name="fileName">文件名</param>
         /// <param name="contentLength">文件长度</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
-        public async Task<UploadFileResponse> UploadFile(string fid, Action<Stream> writer, string fileName, long contentLength)
+        public async Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, Action<Stream> writer, string fileName, long contentLength)
         {
-            var request = new UploadFileRequest(fid, writer, fileName, contentLength);
-            return await UploadInternal(request);
+            var request = new UploadFileRequest(assignFileKey.Fid, writer, fileName, contentLength);
+            return await UploadInternal(assignFileKey, request);
         }
 
         /// <summary>直接上传文件
@@ -198,12 +201,24 @@ namespace Seaweedfs.Client.Rest
             return await _seaweedfsExecuter.ExecuteAsync(connection, request);
         }
 
+        /// <summary>根据Fid获取下载地址
+        /// </summary>
+        /// <param name="fid">文件Id</param>
+        /// <returns></returns>
+        public string GetDownloadUrl(string fid)
+        {
+            var connection = _connectionManager.GetMasterConnection();
+            var connectionAddress = connection.ConnectionAddress;
+            var masterUrl = UrlUtil.ToUrl(_option.Schema, connectionAddress.IPAddress, connectionAddress.Port);
+            return $"{masterUrl}/{fid}";
+        }
+
 
         /// <summary>上传文件内部实现方法
         /// </summary>
-        private async Task<UploadFileResponse> UploadInternal(UploadFileRequest request)
+        private async Task<UploadFileResponse> UploadInternal(AssignFileKey assignFileKey, UploadFileRequest request)
         {
-            var connection = _connectionManager.GetVolumeConnectionByVolumeIdOrFid(request.Fid);
+            var connection = _connectionManager.GetVolumeConnectionByAssignFileKey(assignFileKey);
             return await _seaweedfsExecuter.ExecuteAsync(connection, request);
         }
 

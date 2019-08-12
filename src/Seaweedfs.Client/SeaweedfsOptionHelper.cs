@@ -1,10 +1,9 @@
 using System;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Xml;
 
-namespace Seaweedfs.Client.Rest
+namespace Seaweedfs.Client
 {
 
     /// <summary>SeaweedfsOption配置辅助类
@@ -42,9 +41,10 @@ namespace Seaweedfs.Client.Rest
                 var port = int.Parse(masterNode.SelectSingleNode("Port").InnerText);
                 option.Masters.Add(new MasterServer(ipAddress, port));
             }
-            //日志
-            option.LoggerName = root.SelectSingleNode("LoggerName").InnerText;
-
+            //架构,http/https
+            option.Schema = root.SelectSingleNode("Schema").InnerText;
+            //Master同步时间间隔
+            option.SyncMasterLeaderInterval = int.Parse(root.SelectSingleNode("SyncMasterLeaderInterval").InnerText);
             //关闭读取流
             reader.Close();
             return option;
@@ -77,9 +77,16 @@ namespace Seaweedfs.Client.Rest
                 }
                 sb.AppendLine("</Masters>");
 
-                //日志名
-                sb.AppendLine("<LoggerName>");
-                sb.AppendLine("</LoggerName>");
+                //架构
+                sb.Append("<Schema>");
+                sb.AppendLine(option.Schema);
+                sb.AppendLine("</Schema>");
+
+                //Master Leader同步时间间隔
+                sb.Append("<SyncMasterLeaderInterval>");
+                sb.AppendLine(option.SyncMasterLeaderInterval.ToString());
+                sb.AppendLine("</SyncMasterLeaderInterval>");
+
                 sb.AppendLine("</Seaweedfs>");
                 return sb.ToString();
 

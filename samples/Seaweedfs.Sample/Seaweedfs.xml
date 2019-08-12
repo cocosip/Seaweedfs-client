@@ -2,7 +2,7 @@
   <![CDATA[Master节点配置信息]]>
   <Masters>
     <Master>
-      <IPAddress>192.168.0.1</IPAddress>
+      <IPAddress>127.0.0.1</IPAddress>
       <Port>9333</Port>
     </Master>
   </Masters>

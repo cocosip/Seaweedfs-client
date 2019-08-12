@@ -18,9 +18,6 @@ namespace Seaweedfs.Client
         /// </summary>
         public int SyncMasterLeaderInterval { get; set; } = 30;
 
-        /// <summary>日志名称
-        /// </summary>
-        public string LoggerName { get; set; } = "SeaweedfsLogger";
     }
 
     /// <summary>Master

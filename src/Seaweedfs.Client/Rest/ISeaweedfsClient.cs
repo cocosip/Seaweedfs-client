@@ -60,27 +60,27 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>上传文件
         /// </summary>
-        /// <param name="fid">文件Fid</param>
+        /// <param name="assignFileKey">文件Fid</param>
         /// <param name="filePath">文件本地路径</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
-        Task<UploadFileResponse> UploadFile(string fid, string filePath);
+        Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, string filePath);
 
         /// <summary>上传文件
         /// </summary>
-        /// <param name="fid">文件Fid</param>
+        /// <param name="assignFileKey">文件Fid</param>
         /// <param name="fileBytes">文件二进制</param>
         /// <param name="fileName">文件名</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
-        Task<UploadFileResponse> UploadFile(string fid, byte[] fileBytes, string fileName);
+        Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, byte[] fileBytes, string fileName);
 
         /// <summary>上传文件
         /// </summary>
-        /// <param name="fid">文件Fid</param>
+        /// <param name="assignFileKey">文件Fid</param>
         /// <param name="writer">文件写入方法</param>
         /// <param name="fileName">文件名</param>
         /// <param name="contentLength">文件长度</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
-        Task<UploadFileResponse> UploadFile(string fid, Action<Stream> writer, string fileName, long contentLength);
+        Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, Action<Stream> writer, string fileName, long contentLength);
 
         /// <summary>直接上传文件
         /// </summary>
@@ -114,5 +114,11 @@ namespace Seaweedfs.Client.Rest
         /// <param name="url">volume服务器的地址,例如:127.0.0.1:8080</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.VolumeServerStatusResponse"/></returns>
         Task<VolumeServerStatusResponse> GetVolumeServerStatus(string url);
+
+        /// <summary>根据Fid获取下载地址
+        /// </summary>
+        /// <param name="fid">文件Id</param>
+        /// <returns></returns>
+        string GetDownloadUrl(string fid);
     }
 }

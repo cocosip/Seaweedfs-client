@@ -11,7 +11,7 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>根据AssignFileKeyResponse获取Volume连接
         /// </summary>
-        Connection GetVolumeConnectionByAssignFileKey(AssignFileKeyResponse assignFileKey);
+        Connection GetVolumeConnectionByAssignFileKey(AssignFileKey assignFileKey);
 
         /// <summary>根据VolumeId(可以是Fid)获取Volume连接
         /// </summary>
