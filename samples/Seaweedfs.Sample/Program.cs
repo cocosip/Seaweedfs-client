@@ -18,7 +18,7 @@ namespace Seaweedfs.Sample
         {
             IServiceCollection services = new ServiceCollection();
             services
-                .AddLogging()
+                //.AddLogging()
                 .AddSeaweedfs("Seaweedfs.xml");
             _provider = services.BuildServiceProvider();
             _provider.ConfigureSeaweedfs();
@@ -45,12 +45,17 @@ namespace Seaweedfs.Sample
         {
             Console.WriteLine("-------------上传文件测试---------");
             Stopwatch watch = new Stopwatch();
-            var dir = new DirectoryInfo(@"D:\Pictures");
+            //var dir = new DirectoryInfo(@"D:\Pictures");
+            var dir = new DirectoryInfo(@"D:\DicomTest\BigTest");
             var fileInfos = dir.GetFiles();
             long totalSize = 0;
             watch.Start();
             foreach (var fileInfo in fileInfos)
             {
+                //var uploadFileDirectlyResponse =await _seaweedfsClient.UploadFileDirectly(fileInfo.FullName);
+                //Console.WriteLine("IsSuccessful:{0},Fid:{1},ETag:{2},Size:{3}", uploadFileDirectlyResponse.IsSuccessful, uploadFileDirectlyResponse.Fid, "", uploadFileDirectlyResponse.Size);
+                //UploadFids.Add((uploadFileDirectlyResponse.Fid, uploadFileDirectlyResponse.FileName));
+
                 var assignFileKeyResponse = await _seaweedfsClient.AssignFileKey();
                 var assignFileKey = new AssignFileKey(assignFileKeyResponse.Fid, assignFileKeyResponse.Url);
                 var uploadFileResponse = await _seaweedfsClient.UploadFile(assignFileKey, fileInfo.FullName).ConfigureAwait(false);
