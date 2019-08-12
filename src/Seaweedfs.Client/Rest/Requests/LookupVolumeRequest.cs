@@ -6,7 +6,7 @@ namespace Seaweedfs.Client.Rest
     /// </summary>
     public class LookupVolumeRequest : ISeaweedfsRequest<LookupVolumeResponse>
     {
-        /// <summary>VolumeId
+        /// <summary>VolumeId,可以是文件Fid
         /// </summary>
         public string VolumeId { get; set; }
 
@@ -18,6 +18,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public string Fid { get; set; }
 
+
         /// <summary>Ctor
         /// </summary>
         public LookupVolumeRequest()
@@ -27,10 +28,22 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>Ctor
         /// </summary>
-        public LookupVolumeRequest(string volumeId, string collection, string fid)
+        public LookupVolumeRequest(string volumeId)
         {
             VolumeId = volumeId;
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public LookupVolumeRequest(string volumeId, string collection) : this(volumeId)
+        {
             Collection = collection;
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public LookupVolumeRequest(string volumeId, string collection, string fid) : this(volumeId, collection)
+        {
             Fid = fid;
         }
 
@@ -41,15 +54,11 @@ namespace Seaweedfs.Client.Rest
             var builder = new HttpBuilder("/dir/lookup", Method.GET);
             if (!VolumeId.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("VolumeId", VolumeId, ParameterType.QueryString);
+                builder.AddParameter("volumeId", VolumeId, ParameterType.QueryString);
             }
             if (!Collection.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("Collection", Collection, ParameterType.QueryString);
-            }
-            if (!Fid.IsNullOrWhiteSpace())
-            {
-                builder.AddParameter("FileId", Fid, ParameterType.QueryString);
+                builder.AddParameter("collection", Collection, ParameterType.QueryString);
             }
             return builder;
         }

@@ -31,7 +31,7 @@
             var builder = new HttpBuilder("/vol/vacuum", Method.GET);
             if (GarbageThreshold.HasValue)
             {
-                builder.AddParameter("GarbageThreshold", GarbageThreshold, ParameterType.QueryString);
+                builder.AddParameter("garbageThreshold", GarbageThreshold, ParameterType.QueryString);
             }
 
             return builder;

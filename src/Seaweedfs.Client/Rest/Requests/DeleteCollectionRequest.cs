@@ -28,7 +28,7 @@
         public HttpBuilder CreateBuilder()
         {
             var builder = new HttpBuilder("/col/delete", Method.DELETE);
-            builder.AddParameter("Collection", Collection, ParameterType.QueryString);
+            builder.AddParameter("collection", Collection, ParameterType.QueryString);
             return builder;
         }
     }

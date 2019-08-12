@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace Seaweedfs.Client.Rest
 {
@@ -13,5 +14,13 @@ namespace Seaweedfs.Client.Rest
         /// <summary>Http状态
         /// </summary>
         public HttpStatusCode StatusCode { get; set; }
+
+        /// <summary>异常信息
+        /// </summary>
+        public Exception ErrorException { get; set; }
+
+        /// <summary>异常信息内容
+        /// </summary>
+        public string ErrorMessage { get; set; }
     }
 }

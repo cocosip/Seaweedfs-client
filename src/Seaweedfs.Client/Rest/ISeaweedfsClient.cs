@@ -22,7 +22,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         /// <param name="volumeId">VolumeId</param>
         /// <param name="collection">集合</param>
-        /// <param name="fid">根据文件Id查询</param>
+        /// <param name="fid">文件Id</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.LookupVolumeResponse"/></returns>
         Task<LookupVolumeResponse> LookupVolume(string volumeId = "", string collection = "", string fid = "");
 
@@ -52,6 +52,11 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         /// <returns><see cref="Seaweedfs.Client.Rest.ClusterStatusResponse"/></returns>
         Task<ClusterStatusResponse> GetClusterStatus();
+
+        /// <summary>查询系统状态
+        /// </summary>
+        /// <returns><see cref="Seaweedfs.Client.Rest.SystemStatusResponse"/></returns>
+        Task<SystemStatusResponse> GetSystemStatus();
 
         /// <summary>上传文件
         /// </summary>
@@ -97,5 +102,17 @@ namespace Seaweedfs.Client.Rest
         /// <param name="contentLength">文件长度</param>
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileDirectlyResponse"/></returns>
         Task<UploadFileDirectlyResponse> UploadFileDirectly(Action<Stream> writer, string fileName, long contentLength);
+
+        /// <summary>根据Fid删除文件
+        /// </summary>
+        /// <param name="fid">文件Id</param>
+        /// <returns><see cref="Seaweedfs.Client.Rest.DeleteFileResponse"/></returns>
+        Task<DeleteFileResponse> DeleteFile(string fid);
+
+        /// <summary>获取volume服务器状态
+        /// </summary>
+        /// <param name="url">volume服务器的地址,例如:127.0.0.1:8080</param>
+        /// <returns><see cref="Seaweedfs.Client.Rest.VolumeServerStatusResponse"/></returns>
+        Task<VolumeServerStatusResponse> GetVolumeServerStatus(string url);
     }
 }

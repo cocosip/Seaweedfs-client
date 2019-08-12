@@ -51,23 +51,23 @@ namespace Seaweedfs.Client.Rest
             var builder = new HttpBuilder("/dir/assign", Method.GET);
             if (!Replication.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("Replication", Replication, ParameterType.QueryString);
+                builder.AddParameter("replication", Replication, ParameterType.QueryString);
             }
             if (Count.HasValue)
             {
-                builder.AddParameter("Count", Count.Value, ParameterType.QueryString);
+                builder.AddParameter("count", Count.Value, ParameterType.QueryString);
             }
             if (!DataCenter.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("DataCenter", DataCenter, ParameterType.QueryString);
+                builder.AddParameter("dataCenter", DataCenter, ParameterType.QueryString);
             }
             if (!Ttl.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("Ttl", Ttl, ParameterType.QueryString);
+                builder.AddParameter("ttl", Ttl, ParameterType.QueryString);
             }
             if (!Collection.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("Collection", Collection, ParameterType.QueryString);
+                builder.AddParameter("collection", Collection, ParameterType.QueryString);
             }
 
             return builder;

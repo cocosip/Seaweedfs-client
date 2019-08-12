@@ -1,8 +1,11 @@
 using Microsoft.Extensions.Logging;
 using Seaweedfs.Client.Scheduling;
+using Seaweedfs.Client.Util;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Seaweedfs.Client.Rest
 {
@@ -22,9 +25,14 @@ namespace Seaweedfs.Client.Rest
         /// <summary>Volume连接
         /// </summary>
         private readonly ConcurrentDictionary<ConnectionAddress, Connection> _volumeConnections = new ConcurrentDictionary<ConnectionAddress, Connection>();
+
         /// <summary>Filer连接
         /// </summary>
         private readonly ConcurrentDictionary<ConnectionAddress, Connection> _filerConnections = new ConcurrentDictionary<ConnectionAddress, Connection>();
+
+        /// <summary>VolumeId与地址的映射集合
+        /// </summary>
+        private readonly ConcurrentDictionary<string, ConnectionAddress> _volumeIdAddressMappers = new ConcurrentDictionary<string, ConnectionAddress>();
 
         /// <summary>Ctor
         /// </summary>
@@ -42,6 +50,75 @@ namespace Seaweedfs.Client.Rest
         public Connection GetMasterConnection()
         {
             return _masterConnection;
+        }
+
+        /// <summary>根据AssignFileKeyResponse获取Volume连接
+        /// </summary>
+        public Connection GetVolumeConnectionByAssignFileKey(AssignFileKeyResponse assignFileKey)
+        {
+            return GetVolumeConnectionInternal(new ConnectionAddress(assignFileKey.Url));
+        }
+
+        /// <summary>根据VolumeId(可以是Fid)获取Volume连接
+        /// </summary>
+        public Connection GetVolumeConnectionByVolumeIdOrFid(string volumeIdOrFid)
+        {
+            //如果是Fid,就转换成VolumeId
+            if (StringUtil.IsFid(volumeIdOrFid))
+            {
+                volumeIdOrFid = StringUtil.GetVolumeId(volumeIdOrFid);
+            }
+
+            if (_volumeIdAddressMappers.TryGetValue(volumeIdOrFid, out ConnectionAddress connectionAddress))
+            {
+                return GetVolumeConnectionInternal(connectionAddress);
+            }
+            else
+            {
+
+                var request = new LookupVolumeRequest(volumeIdOrFid);
+                var task = _seaweedfsExecuter.ExecuteAsync(_masterConnection, request);
+                task.Wait();
+                //查询Volume返回
+                var lookupVolumeResponse = task.Result;
+                if (lookupVolumeResponse.IsSuccessful)
+                {
+                    //成功
+                    lock(SyncObject)
+                    {
+                        //连接地址
+                        connectionAddress = new ConnectionAddress(lookupVolumeResponse.Locations.FirstOrDefault().Url);
+                        //添加映射
+                        _volumeIdAddressMappers.TryAdd(volumeIdOrFid, connectionAddress);
+                        return GetVolumeConnectionInternal(connectionAddress);
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("根据VolumeId获取Volume信息时出错,VolumeId:{0},HttpStatus:{1}", volumeIdOrFid, lookupVolumeResponse.StatusCode);
+                    throw new Exception($"获取Volume信息出错,{lookupVolumeResponse.ErrorMessage}");
+                }
+            }
+
+        }
+
+        /// <summary>根据Url获取Volume连接
+        /// </summary>
+        public Connection GetVolumeConnectionByUrl(string url)
+        {
+            var connectionAddress = new ConnectionAddress(url);
+            return GetVolumeConnectionInternal(connectionAddress);
+        }
+
+        /// <summary>根据链接地址获取Volume连接
+        /// </summary>
+        private Connection GetVolumeConnectionInternal(ConnectionAddress connectionAddress)
+        {
+            var volumeConnection = _volumeConnections.GetOrAdd(connectionAddress, addr =>
+            {
+                return _connectionFactory.CreateConnection(addr, ConnectionType.Volume);
+            });
+            return volumeConnection;
         }
 
 
@@ -156,7 +233,6 @@ namespace Seaweedfs.Client.Rest
             }
 
         }
-
 
 
     }

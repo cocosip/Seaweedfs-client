@@ -2,9 +2,9 @@
 
 namespace Seaweedfs.Client.Rest
 {
-    /// <summary>查询Volume状态响应
+    /// <summary>获取VolumeServer服务器状态返回
     /// </summary>
-    public class VolumeStatusResponse : SeaweedfsResponse
+    public class VolumeServerStatusResponse : SeaweedfsResponse
     {
         /// <summary>版本信息
         /// </summary>

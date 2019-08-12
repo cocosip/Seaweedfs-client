@@ -9,6 +9,18 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         Connection GetMasterConnection();
 
+        /// <summary>根据AssignFileKeyResponse获取Volume连接
+        /// </summary>
+        Connection GetVolumeConnectionByAssignFileKey(AssignFileKeyResponse assignFileKey);
+
+        /// <summary>根据VolumeId(可以是Fid)获取Volume连接
+        /// </summary>
+        Connection GetVolumeConnectionByVolumeIdOrFid(string volumeIdOrFid);
+
+        /// <summary>根据Url获取Volume连接
+        /// </summary>
+        Connection GetVolumeConnectionByUrl(string url);
+
         /// <summary>运行
         /// </summary>
         void Start();

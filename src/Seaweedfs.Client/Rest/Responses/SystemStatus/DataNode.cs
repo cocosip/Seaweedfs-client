@@ -26,7 +26,7 @@
 
         /// <summary>Volume数量
         /// </summary>
-        public long Volumes { get; set; }
+        public int Volumes { get; set; }
 
         /// <summary>Ctor
         /// </summary>

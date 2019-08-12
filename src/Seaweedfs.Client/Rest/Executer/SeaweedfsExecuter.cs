@@ -32,7 +32,9 @@ namespace Seaweedfs.Client.Rest
             var result = new T()
             {
                 IsSuccessful = response.IsSuccessful,
-                StatusCode = response.StatusCode
+                StatusCode = response.StatusCode,
+                ErrorException = response.ErrorException,
+                ErrorMessage = response.ErrorMessage
             };
 
             if (response.IsSuccessful)
@@ -48,8 +50,11 @@ namespace Seaweedfs.Client.Rest
                 {
                     _logger.LogError(ex, "执行Seaweedfs请求,对返回值反序列化失败,{0}", ex.Message);
                     result.IsSuccessful = false;
+                    result.ErrorException = ex;
+                    result.ErrorMessage = ex.Message;
                 }
             }
+
             return result;
         }
     }

@@ -8,6 +8,20 @@
         /// </summary>
         public string Fid { get; set; }
 
+        /// <summary>Ctor
+        /// </summary>
+        public DeleteFileRequest()
+        {
+
+        }
+
+        /// <summary>Ctor
+        /// </summary>
+        public DeleteFileRequest(string fid)
+        {
+            Fid = fid;
+        }
+
         /// <summary>创建HttpBuilder
         /// </summary>
         public HttpBuilder CreateBuilder()

@@ -80,22 +80,22 @@ namespace Seaweedfs.Client.Rest
         public HttpBuilder CreateBuilder()
         {
             var builder = new HttpBuilder("/vol/grow", Method.GET);
-            builder.AddParameter("Count", Count, ParameterType.QueryString);
+            builder.AddParameter("count", Count, ParameterType.QueryString);
             if (!DataCenter.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("DataCenter", DataCenter, ParameterType.QueryString);
+                builder.AddParameter("dataCenter", DataCenter, ParameterType.QueryString);
             }
             if (!Replication.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("Replication", Replication, ParameterType.QueryString);
+                builder.AddParameter("replication", Replication, ParameterType.QueryString);
             }
             if (!Collection.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("Collection", Collection, ParameterType.QueryString);
+                builder.AddParameter("collection", Collection, ParameterType.QueryString);
             }
             if (!Ttl.IsNullOrWhiteSpace())
             {
-                builder.AddParameter("Ttl", Ttl, ParameterType.QueryString);
+                builder.AddParameter("ttl", Ttl, ParameterType.QueryString);
             }
             return builder;
         }

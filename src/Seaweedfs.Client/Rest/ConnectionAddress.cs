@@ -31,9 +31,9 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>Ctor
         /// </summary>
-        public ConnectionAddress(string iPAddressWithPort)
+        public ConnectionAddress(string url)
         {
-            var array = iPAddressWithPort.Split(':');
+            var array = url.Split(':');
             IPAddress = array[0];
             Port = int.Parse(array[1]);
         }
