@@ -12,14 +12,16 @@ namespace Seaweedfs.Client.Rest
         private readonly SeaweedfsOption _option;
         private readonly IConnectionManager _connectionManager;
         private readonly ISeaweedfsExecuter _seaweedfsExecuter;
+        private readonly IDownloader _downloader;
 
         /// <summary>Ctor
         /// </summary>
-        public SeaweedfsClient(IConnectionManager connectionManager, ISeaweedfsExecuter seaweedfsExecuter, SeaweedfsOption option)
+        public SeaweedfsClient(IConnectionManager connectionManager, ISeaweedfsExecuter seaweedfsExecuter, SeaweedfsOption option, IDownloader downloader)
         {
             _option = option;
             _connectionManager = connectionManager;
             _seaweedfsExecuter = seaweedfsExecuter;
+            _downloader = downloader;
         }
 
         /// <summary>获取AssignFid
@@ -209,8 +211,34 @@ namespace Seaweedfs.Client.Rest
         {
             var connection = _connectionManager.GetMasterConnection();
             var connectionAddress = connection.ConnectionAddress;
-            var masterUrl = UrlUtil.ToUrl(_option.Schema, connectionAddress.IPAddress, connectionAddress.Port);
+            var masterUrl = UrlUtil.ToUrl(_option.Scheme, connectionAddress.IPAddress, connectionAddress.Port);
             return $"{masterUrl}/{fid}";
+        }
+
+        /// <summary>下载文件到指定目录
+        /// </summary>
+        /// <param name="fid">文件Id</param>
+        /// <param name="savePath">保存路径</param>
+        /// <returns></returns>
+        public async Task DownloadFile(string fid, string savePath)
+        {
+            //获取存储源的地址
+            var connection = _connectionManager.GetVolumeConnectionByVolumeIdOrFid(fid);
+            var url = $"{ UrlUtil.ToUrl(_option.Scheme, connection.ConnectionAddress.IPAddress, connection.ConnectionAddress.Port)}/{fid}";
+            await _downloader.DownloadFileAsync(url, savePath);
+        }
+
+        /// <summary>下载文件到流中,对流进行操作
+        /// </summary>
+        /// <param name="fid">文件Id</param>
+        /// <param name="writer">写流操作</param>
+        /// <returns></returns>
+        public async Task DownloadFile(string fid, Action<Stream> writer)
+        {
+            //获取存储源的地址
+            var connection = _connectionManager.GetVolumeConnectionByVolumeIdOrFid(fid);
+            var url = $"{UrlUtil.ToUrl(_option.Scheme, connection.ConnectionAddress.IPAddress, connection.ConnectionAddress.Port)}/{fid}";
+            await _downloader.DownloadFileAsync(url, writer);
         }
 
 

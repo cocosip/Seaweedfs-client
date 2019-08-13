@@ -18,7 +18,7 @@ namespace Seaweedfs.Sample
         {
             IServiceCollection services = new ServiceCollection();
             services
-                //.AddLogging()
+                .AddLogging()
                 .AddSeaweedfs("Seaweedfs.xml");
             _provider = services.BuildServiceProvider();
             _provider.ConfigureSeaweedfs();
@@ -83,13 +83,10 @@ namespace Seaweedfs.Sample
             watch.Start();
             foreach (var v in UploadFids)
             {
-                var url = _seaweedfsClient.GetDownloadUrl(v.Item1);
                 var ext = GetPathExtension(v.Item2);
                 var savePath = Path.Combine(saveDir, $"{Guid.NewGuid().ToString()}{ext}");
-                var request = new RestRequest($"/{v.Item1}");
-                var data = restClient.DownloadData(request);
-                File.WriteAllBytes(savePath, data);
-                Console.WriteLine("下载文件,Fid:{0},Url:{1},保存路径:{2}", v.Item1, url, savePath);
+                _seaweedfsClient.DownloadFile(v.Item1, savePath).Wait();
+                Console.WriteLine("下载文件,Fid:{0},保存路径:{1}", v.Item1, savePath);
             }
             watch.Stop();
             //获取下载的文件总大小

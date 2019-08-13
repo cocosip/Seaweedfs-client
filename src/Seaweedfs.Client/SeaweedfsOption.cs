@@ -12,7 +12,7 @@ namespace Seaweedfs.Client
 
         /// <summary>架构,默认使用Http架构
         /// </summary>
-        public string Schema { get; set; } = "http";
+        public string Scheme { get; set; } = "http";
 
         /// <summary>同步Master中Leader的时间间隔,以s为单位
         /// </summary>

@@ -7,7 +7,7 @@
     </Master>
   </Masters>
   <![CDATA[架构]]>
-  <Schema>http</Schema>
+  <Scheme>http</Scheme>
   <![CDATA[同步Master中Leader的时间间隔,以s为单位]]>
   <SyncMasterLeaderInterval>30</SyncMasterLeaderInterval>
 </Seaweedfs>

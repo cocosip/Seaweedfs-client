@@ -42,7 +42,7 @@ namespace Seaweedfs.Client
                 option.Masters.Add(new MasterServer(ipAddress, port));
             }
             //架构,http/https
-            option.Schema = root.SelectSingleNode("Schema").InnerText;
+            option.Scheme = root.SelectSingleNode("Scheme").InnerText;
             //Master同步时间间隔
             option.SyncMasterLeaderInterval = int.Parse(root.SelectSingleNode("SyncMasterLeaderInterval").InnerText);
             //关闭读取流
@@ -79,7 +79,7 @@ namespace Seaweedfs.Client
 
                 //架构
                 sb.Append("<Schema>");
-                sb.AppendLine(option.Schema);
+                sb.AppendLine(option.Scheme);
                 sb.AppendLine("</Schema>");
 
                 //Master Leader同步时间间隔

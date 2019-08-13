@@ -38,7 +38,7 @@ namespace Seaweedfs.Client.Rest
             _option = option;
             ConnectionAddress = connectionAddress;
             _connectionType = connectionType;
-            BaseUrl = UrlUtil.ToUrl(option.Schema, connectionAddress.IPAddress, connectionAddress.Port);
+            BaseUrl = UrlUtil.ToUrl(option.Scheme, connectionAddress.IPAddress, connectionAddress.Port);
             Client = new RestClient(BaseUrl);
         }
 

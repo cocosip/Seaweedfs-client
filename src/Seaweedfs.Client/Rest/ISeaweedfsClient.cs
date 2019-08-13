@@ -120,5 +120,19 @@ namespace Seaweedfs.Client.Rest
         /// <param name="fid">文件Id</param>
         /// <returns></returns>
         string GetDownloadUrl(string fid);
+
+        /// <summary>下载文件到指定目录
+        /// </summary>
+        /// <param name="fid">文件Id</param>
+        /// <param name="savePath">保存路径</param>
+        /// <returns></returns>
+        Task DownloadFile(string fid, string savePath);
+
+        /// <summary>下载文件到流中,对流进行操作
+        /// </summary>
+        /// <param name="fid">文件Id</param>
+        /// <param name="writer">写流操作</param>
+        /// <returns></returns>
+        Task DownloadFile(string fid, Action<Stream> writer);
     }
 }
