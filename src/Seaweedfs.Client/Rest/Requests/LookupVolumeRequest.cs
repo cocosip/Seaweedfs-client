@@ -4,8 +4,16 @@ namespace Seaweedfs.Client.Rest
 {
     /// <summary>查询Volume请求
     /// </summary>
-    public class LookupVolumeRequest : ISeaweedfsRequest<LookupVolumeResponse>
+    public class LookupVolumeRequest : BaseSeaweedfsRequest<LookupVolumeResponse>
     {
+        /// <summary>请求资源
+        /// </summary>
+        public override string Resource { get; set; } = "/dir/lookup";
+
+        /// <summary>服务器端类型
+        /// </summary>
+        public override ServerType ServerType { get; set; } = ServerType.Master;
+
         /// <summary>VolumeId,可以是文件Fid
         /// </summary>
         public string VolumeId { get; set; }
@@ -13,11 +21,6 @@ namespace Seaweedfs.Client.Rest
         /// <summary>Collection
         /// </summary>
         public string Collection { get; set; }
-
-        /// <summary>文件Id
-        /// </summary>
-        public string Fid { get; set; }
-
 
         /// <summary>Ctor
         /// </summary>
@@ -49,9 +52,9 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>创建HttpBuilder
         /// </summary>
-        public HttpBuilder CreateBuilder()
+        public override HttpBuilder CreateBuilder()
         {
-            var builder = new HttpBuilder("/dir/lookup", Method.GET);
+            var builder = new HttpBuilder(Resource, Method.GET);
             if (!VolumeId.IsNullOrWhiteSpace())
             {
                 builder.AddParameter("volumeId", VolumeId, ParameterType.QueryString);

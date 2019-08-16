@@ -5,11 +5,15 @@ namespace Seaweedfs.Client.Rest
 {
     /// <summary>上传文件请求
     /// </summary>
-    public class UploadFileRequest : ISeaweedfsRequest<UploadFileResponse>
+    public class UploadFileRequest : BaseSeaweedfsRequest<UploadFileResponse>
     {
-        /// <summary>文件Id
+        /// <summary>请求资源
         /// </summary>
-        public string Fid { get; set; }
+        public override string Resource { get; set; } = "/dir/assign";
+
+        /// <summary>服务器端类型
+        /// </summary>
+        public override ServerType ServerType { get; set; } = ServerType.Volume;
 
         /// <summary>文件名
         /// </summary>
@@ -78,9 +82,10 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>创建HttpBuilder
         /// </summary>
-        public HttpBuilder CreateBuilder()
+        public override HttpBuilder CreateBuilder()
         {
-            var builder = new HttpBuilder(Fid, Method.POST);
+            var builder = new HttpBuilder(Resource, Method.POST);
+            builder.AddParameter("fid", Fid, ParameterType.UrlSegment);
             if (!FilePath.IsNullOrWhiteSpace())
             {
                 builder.AddFile("file", FilePath);

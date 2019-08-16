@@ -7,8 +7,16 @@ namespace Seaweedfs.Client.Rest
 
     /// <summary>直接上传文件请求
     /// </summary>
-    public class UploadFileDirectlyRequest : ISeaweedfsRequest<UploadFileDirectlyResponse>
+    public class UploadFileDirectlyRequest : BaseSeaweedfsRequest<UploadFileDirectlyResponse>
     {
+        /// <summary>请求资源
+        /// </summary>
+        public override string Resource { get; set; } = "/submit";
+
+        /// <summary>服务器端类型
+        /// </summary>
+        public override ServerType ServerType { get; set; } = ServerType.Master;
+
         /// <summary>文件名
         /// </summary>
         public string FileName { get; set; }
@@ -69,7 +77,7 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>创建HttpBuilder
         /// </summary>
-        public HttpBuilder CreateBuilder()
+        public override HttpBuilder CreateBuilder()
         {
             var builder = new HttpBuilder("/submit", Method.POST);
             if (!FilePath.IsNullOrWhiteSpace())

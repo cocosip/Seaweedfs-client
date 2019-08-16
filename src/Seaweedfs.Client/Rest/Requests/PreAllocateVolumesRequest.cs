@@ -4,8 +4,15 @@ namespace Seaweedfs.Client.Rest
 {
     /// <summary>预分配Volumes请求
     /// </summary>
-    public class PreAllocateVolumesRequest : ISeaweedfsRequest<PreAllocateVolumesResponse>
+    public class PreAllocateVolumesRequest : BaseSeaweedfsRequest<PreAllocateVolumesResponse>
     {
+        /// <summary>请求资源
+        /// </summary>
+        public override string Resource { get; set; } = "/vol/grow";
+
+        /// <summary>服务器端类型
+        /// </summary>
+        public override ServerType ServerType { get; set; } = ServerType.Master;
 
         /// <summary>数量
         /// </summary>
@@ -77,9 +84,9 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>创建HttpBuilder
         /// </summary>
-        public HttpBuilder CreateBuilder()
+        public override HttpBuilder CreateBuilder()
         {
-            var builder = new HttpBuilder("/vol/grow", Method.GET);
+            var builder = new HttpBuilder(Resource, Method.GET);
             builder.AddParameter("count", Count, ParameterType.QueryString);
             if (!DataCenter.IsNullOrWhiteSpace())
             {

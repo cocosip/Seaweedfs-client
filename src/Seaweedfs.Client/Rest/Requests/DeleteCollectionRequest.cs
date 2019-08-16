@@ -2,8 +2,15 @@
 {
     /// <summary>删除集合请求
     /// </summary>
-    public class DeleteCollectionRequest : ISeaweedfsRequest<DeleteCollectionResponse>
+    public class DeleteCollectionRequest : BaseSeaweedfsRequest<DeleteCollectionResponse>
     {
+        /// <summary>请求资源
+        /// </summary>
+        public override string Resource { get; set; } = "/col/delete";
+
+        /// <summary>服务器端类型
+        /// </summary>
+        public override ServerType ServerType { get; set; } = ServerType.Master;
 
         /// <summary>集合名
         /// </summary>
@@ -25,9 +32,9 @@
 
         /// <summary>创建HttpBuilder
         /// </summary>
-        public HttpBuilder CreateBuilder()
+        public override HttpBuilder CreateBuilder()
         {
-            var builder = new HttpBuilder("/col/delete", Method.DELETE);
+            var builder = new HttpBuilder(Resource, Method.DELETE);
             builder.AddParameter("collection", Collection, ParameterType.QueryString);
             return builder;
         }

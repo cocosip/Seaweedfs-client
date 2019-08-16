@@ -2,12 +2,15 @@
 {
     /// <summary>删除文件请求
     /// </summary>
-    public class DeleteFileRequest : ISeaweedfsRequest<DeleteFileResponse>
+    public class DeleteFileRequest : BaseSeaweedfsRequest<DeleteFileResponse>
     {
-        /// <summary>删除文件
+        /// <summary>请求资源
         /// </summary>
-        public string Fid { get; set; }
+        public override string Resource { get; set; } = "/{fid}";
 
+        /// <summary>服务器端类型
+        /// </summary>
+        public override ServerType ServerType { get; set; } = ServerType.Volume;
         /// <summary>Ctor
         /// </summary>
         public DeleteFileRequest()
@@ -24,9 +27,10 @@
 
         /// <summary>创建HttpBuilder
         /// </summary>
-        public HttpBuilder CreateBuilder()
+        public override HttpBuilder CreateBuilder()
         {
-            var builder = new HttpBuilder(Fid, Method.DELETE);
+            var builder = new HttpBuilder(Resource, Method.DELETE);
+            builder.AddParameter("fid", Fid, ParameterType.UrlSegment);
             return builder;
         }
     }

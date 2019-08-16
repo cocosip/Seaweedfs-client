@@ -4,8 +4,16 @@ namespace Seaweedfs.Client.Rest
 {
     /// <summary>分配文件Key请求
     /// </summary>
-    public class AssignFileKeyRequest : ISeaweedfsRequest<AssignFileKeyResponse>
+    public class AssignFileKeyRequest : BaseSeaweedfsRequest<AssignFileKeyResponse>
     {
+        /// <summary>请求资源
+        /// </summary>
+        public override string Resource { get; set; } = "/dir/assign";
+
+        /// <summary>服务器端类型
+        /// </summary>
+        public override ServerType ServerType { get; set; } = ServerType.Master;
+
         /// <summary>复制机制
         /// </summary>
         public string Replication { get; set; }
@@ -25,6 +33,7 @@ namespace Seaweedfs.Client.Rest
         /// <summary>集合
         /// </summary>
         public string Collection { get; set; }
+
 
         /// <summary>Ctor
         /// </summary>
@@ -46,9 +55,9 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>创建HttpBuilder
         /// </summary>
-        public HttpBuilder CreateBuilder()
+        public override HttpBuilder CreateBuilder()
         {
-            var builder = new HttpBuilder("/dir/assign", Method.GET);
+            var builder = new HttpBuilder(Resource, Method.GET);
             if (!Replication.IsNullOrWhiteSpace())
             {
                 builder.AddParameter("replication", Replication, ParameterType.QueryString);
@@ -72,5 +81,7 @@ namespace Seaweedfs.Client.Rest
 
             return builder;
         }
+
+
     }
 }
