@@ -3,6 +3,7 @@ using Seaweedfs.Client.Rest;
 using Seaweedfs.Client.Scheduling;
 using Seaweedfs.Client.Serializing;
 using System;
+using System.Linq;
 
 namespace Seaweedfs.Client
 {
@@ -38,9 +39,25 @@ namespace Seaweedfs.Client
                 .AddSingleton<IConnectionFactory, ConnectionFactory>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()
                 .AddSingleton<SeaweedfsOption>(option)
+                .AddSingleton<IRestExecuteContextFactory, RestExecuteContextFactory>()
+                .AddSingleton<IRestPipelineBuilder, RestPipelineBuilder>()
                 .AddSingleton<IDownloader, DefaultDownloader>()
                 .AddTransient<ISeaweedfsExecuter, SeaweedfsExecuter>()
-                .AddTransient<ISeaweedfsClient, SeaweedfsClient>();
+                .AddTransient<ISeaweedfsClient, SeaweedfsClient>()
+                .RegisterPipeline();
+            return services;
+        }
+
+
+        //注册Pipeline
+        private static IServiceCollection RegisterPipeline(this IServiceCollection services)
+        {
+            //查询出全部的中间件
+            var middlewareTypies = typeof(SeaweedfsConsts).Assembly.GetTypes().Where(x => typeof(RestMiddleware).IsAssignableFrom(x) && x != typeof(RestMiddleware));
+            foreach (var middlewareType in middlewareTypies)
+            {
+                services.AddTransient(middlewareType);
+            }
             return services;
         }
 
