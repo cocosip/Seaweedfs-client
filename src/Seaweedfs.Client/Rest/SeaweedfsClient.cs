@@ -35,8 +35,7 @@ namespace Seaweedfs.Client.Rest
         public async Task<AssignFileKeyResponse> AssignFileKey(string replication = "", int? count = 1, string dataCenter = "", string ttl = "", string collection = "")
         {
             var request = new AssignFileKeyRequest(replication, count, dataCenter, ttl, collection);
-            var connection = _connectionManager.GetMasterConnection();
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
         /// <summary>查询Volume
@@ -48,8 +47,7 @@ namespace Seaweedfs.Client.Rest
         public async Task<LookupVolumeResponse> LookupVolume(string volumeId = "", string collection = "", string fid = "")
         {
             var request = new LookupVolumeRequest(volumeId, collection);
-            var connection = _connectionManager.GetMasterConnection();
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
         /// <summary>强制垃圾回收
@@ -59,8 +57,7 @@ namespace Seaweedfs.Client.Rest
         public async Task<ForceGarbageCollectionResponse> ForceGC(decimal? garbageThreshold = null)
         {
             var request = new ForceGarbageCollectionRequest(garbageThreshold);
-            var connection = _connectionManager.GetMasterConnection();
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
         /// <summary>预分配Volumes
@@ -74,8 +71,7 @@ namespace Seaweedfs.Client.Rest
         public async Task<PreAllocateVolumesResponse> PreAllocateVolumes(int count = 1, string dataCenter = "", string replication = "", string ttl = "", string collection = "")
         {
             var request = new PreAllocateVolumesRequest(count, dataCenter, replication, ttl, collection);
-            var connection = _connectionManager.GetMasterConnection();
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
         /// <summary>删除集合
@@ -85,8 +81,7 @@ namespace Seaweedfs.Client.Rest
         public async Task<DeleteCollectionResponse> DeleteCollection(string collection)
         {
             var request = new DeleteCollectionRequest(collection);
-            var connection = _connectionManager.GetMasterConnection();
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
         /// <summary>查询集群状态
@@ -95,8 +90,7 @@ namespace Seaweedfs.Client.Rest
         public async Task<ClusterStatusResponse> GetClusterStatus()
         {
             var request = new ClusterStatusRequest();
-            var connection = _connectionManager.GetMasterConnection();
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
 
@@ -106,8 +100,7 @@ namespace Seaweedfs.Client.Rest
         public async Task<SystemStatusResponse> GetSystemStatus()
         {
             var request = new SystemStatusRequest();
-            var connection = _connectionManager.GetMasterConnection();
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
         /// <summary>上传文件
@@ -186,9 +179,13 @@ namespace Seaweedfs.Client.Rest
         /// <returns><see cref="Seaweedfs.Client.Rest.DeleteFileResponse"/></returns>
         public async Task<DeleteFileResponse> DeleteFile(string fid)
         {
+            if (_option.EnableJwt)
+            {
+                var lookupRequest = new LookupRequest(fid);
+                await _seaweedfsExecuter.ExecuteAsync(lookupRequest);
+            }
             var request = new DeleteFileRequest(fid);
-            var connection = _connectionManager.GetVolumeConnectionByVolumeIdOrFid(fid);
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
 
@@ -199,8 +196,7 @@ namespace Seaweedfs.Client.Rest
         public async Task<VolumeServerStatusResponse> GetVolumeServerStatus(string url)
         {
             var request = new VolumeServerStatusRequest();
-            var connection = _connectionManager.GetVolumeConnectionByUrl(url);
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
         /// <summary>根据Fid获取下载地址
@@ -222,10 +218,7 @@ namespace Seaweedfs.Client.Rest
         /// <returns></returns>
         public async Task DownloadFile(string fid, string savePath)
         {
-            //获取存储源的地址
-            var connection = _connectionManager.GetVolumeConnectionByVolumeIdOrFid(fid);
-            var url = $"{ UrlUtil.ToUrl(_option.Scheme, connection.ConnectionAddress.IPAddress, connection.ConnectionAddress.Port)}/{fid}";
-            await _downloader.DownloadFileAsync(url, savePath);
+            await _downloader.DownloadFileAsync(fid, savePath);
         }
 
         /// <summary>下载文件到流中,对流进行操作
@@ -235,10 +228,7 @@ namespace Seaweedfs.Client.Rest
         /// <returns></returns>
         public async Task DownloadFile(string fid, Action<Stream> writer)
         {
-            //获取存储源的地址
-            var connection = _connectionManager.GetVolumeConnectionByVolumeIdOrFid(fid);
-            var url = $"{UrlUtil.ToUrl(_option.Scheme, connection.ConnectionAddress.IPAddress, connection.ConnectionAddress.Port)}/{fid}";
-            await _downloader.DownloadFileAsync(url, writer);
+            await _downloader.DownloadFileAsync(fid, writer);
         }
 
 
@@ -246,16 +236,16 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         private async Task<UploadFileResponse> UploadInternal(AssignFileKey assignFileKey, UploadFileRequest request)
         {
-            var connection = _connectionManager.GetVolumeConnectionByAssignFileKey(assignFileKey);
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            //指定上传服务器地址
+            request.AssignServer = assignFileKey.Url;
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
         /// <summary>直接上传文件内部方法
         /// </summary>
         private async Task<UploadFileDirectlyResponse> UploadDirectlyInternal(UploadFileDirectlyRequest request)
         {
-            var connection = _connectionManager.GetMasterConnection();
-            return await _seaweedfsExecuter.ExecuteAsync(connection, request);
+            return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
     }

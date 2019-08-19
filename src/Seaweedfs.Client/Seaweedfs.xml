@@ -2,7 +2,7 @@
   <![CDATA[Master节点配置信息]]>
   <Masters>
     <Master>
-      <IPAddress>192.168.0.1</IPAddress>
+      <IPAddress>127.0.0.1</IPAddress>
       <Port>9333</Port>
     </Master>
   </Masters>
@@ -10,4 +10,12 @@
   <Scheme>http</Scheme>
   <![CDATA[同步Master中Leader的时间间隔,以s为单位]]>
   <SyncMasterLeaderInterval>30</SyncMasterLeaderInterval>
+  <![CDATA[是否开启Jwt认证]]>
+  <EnableJwt>true</EnableJwt>
+  <![CDATA[Jwt超时时间,默认10s]]>
+  <JwtTimeoutSeconds>10</JwtTimeoutSeconds>
+  <![CDATA[是否开启读取文件Jwt认证]]>
+  <EnableReadJwt>false</EnableReadJwt>
+  <![CDATA[读文件Jwt超时时间,默认10s]]>
+  <ReadJwtTimeoutSeconds>10</ReadJwtTimeoutSeconds>
 </Seaweedfs>

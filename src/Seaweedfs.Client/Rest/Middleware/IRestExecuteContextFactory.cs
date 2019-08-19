@@ -6,6 +6,6 @@
     {
         /// <summary>创建上下文
         /// </summary>
-        RestExecuteContext CreateContext<T>(ISeaweedfsRequest<T> request) where T : SeaweedfsResponse;
+        RestExecuteContext CreateContext<T>(ISeaweedfsRequest<T> request) where T : SeaweedfsResponse, new();
     }
 }

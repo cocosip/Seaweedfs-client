@@ -6,13 +6,14 @@
     {
         /// <summary>创建上下文
         /// </summary>
-        public RestExecuteContext CreateContext<T>(ISeaweedfsRequest<T> request) where T : SeaweedfsResponse
+        public RestExecuteContext CreateContext<T>(ISeaweedfsRequest<T> request) where T : SeaweedfsResponse, new()
         {
             var context = new RestExecuteContext()
             {
                 Request = request,
                 ServerType = request.ServerType,
-                Response = default(T)
+                AssignServer = request.AssignServer,
+                Response = new T()
             };
             return context;
         }

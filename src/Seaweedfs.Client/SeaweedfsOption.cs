@@ -18,33 +18,48 @@ namespace Seaweedfs.Client
         /// </summary>
         public int SyncMasterLeaderInterval { get; set; } = 30;
 
-    }
-
-    /// <summary>Master
-    /// </summary>
-    public class MasterServer
-    {
-        /// <summary>IP地址
+        /// <summary>是否开启Jwt认证
         /// </summary>
-        public string IPAddress { get; set; }
+        public bool EnableJwt { get; set; } = false;
 
-        /// <summary>端口号
+        /// <summary>Jwt超时的秒数,以s为单位
         /// </summary>
-        public int Port { get; set; }
+        public int JwtTimeoutSeconds { get; set; } = 10;
 
-        /// <summary>Ctor
+        /// <summary>是否开启读文件Jwt认证
         /// </summary>
-        public MasterServer()
+        public bool EnableReadJwt { get; set; } = false;
+
+        /// <summary>读文件Jwt超时的秒数,以s为单位
+        /// </summary>
+        public int ReadJwtTimeoutSeconds { get; set; } = 10;
+
+        /// <summary>Master
+        /// </summary>
+        public class MasterServer
         {
+            /// <summary>IP地址
+            /// </summary>
+            public string IPAddress { get; set; }
 
-        }
+            /// <summary>端口号
+            /// </summary>
+            public int Port { get; set; }
 
-        /// <summary>Ctor
-        /// </summary>
-        public MasterServer(string ipAddress, int port)
-        {
-            IPAddress = ipAddress;
-            Port = port;
+            /// <summary>Ctor
+            /// </summary>
+            public MasterServer()
+            {
+
+            }
+
+            /// <summary>Ctor
+            /// </summary>
+            public MasterServer(string ipAddress, int port)
+            {
+                IPAddress = ipAddress;
+                Port = port;
+            }
         }
     }
 }

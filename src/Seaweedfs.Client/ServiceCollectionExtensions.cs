@@ -38,6 +38,7 @@ namespace Seaweedfs.Client
                 .AddSingleton<IScheduleService, ScheduleService>()
                 .AddSingleton<IConnectionFactory, ConnectionFactory>()
                 .AddSingleton<IConnectionManager, ConnectionManager>()
+                .AddSingleton<IJwtManager, JwtManager>()
                 .AddSingleton<SeaweedfsOption>(option)
                 .AddSingleton<IRestExecuteContextFactory, RestExecuteContextFactory>()
                 .AddSingleton<IRestPipelineBuilder, RestPipelineBuilder>()

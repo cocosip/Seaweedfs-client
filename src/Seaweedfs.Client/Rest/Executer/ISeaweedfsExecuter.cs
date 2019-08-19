@@ -9,6 +9,6 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>执行Seaweedfs请求
         /// </summary>
-        Task<T> ExecuteAsync<T>(Connection connection, ISeaweedfsRequest<T> request) where T : SeaweedfsResponse, new();
+        Task<T> ExecuteAsync<T>(ISeaweedfsRequest<T> request) where T : SeaweedfsResponse, new();
     }
 }

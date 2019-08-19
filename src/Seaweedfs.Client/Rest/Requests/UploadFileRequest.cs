@@ -9,7 +9,7 @@ namespace Seaweedfs.Client.Rest
     {
         /// <summary>请求资源
         /// </summary>
-        public override string Resource { get; set; } = "/dir/assign";
+        public override string Resource { get; set; } = "/{fid}";
 
         /// <summary>服务器端类型
         /// </summary>

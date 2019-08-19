@@ -16,6 +16,16 @@ namespace Seaweedfs.Client
             var connectionManager = provider.GetService<IConnectionManager>();
             connectionManager.Start();
 
+            //Pipeline
+            var pipelineBuilder = provider.GetService<IRestPipelineBuilder>();
+            pipelineBuilder
+                .UseMiddleware<BuildHttpMiddleware>()
+                .UseMiddleware<PreAuthenticationMiddleware>() //上传认证
+                .UseMiddleware<ExecuterExecuteMiddleware>()
+                .UseMiddleware<AssignJwtMiddleware>()
+                .UseMiddleware<LookupJwtMiddleware>()
+                .UseMiddleware<EndMiddleware>();
+
             return provider;
         }
     }

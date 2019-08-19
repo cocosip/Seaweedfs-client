@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using RestSharp;
-using Seaweedfs.Client.Serializing;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,16 +10,14 @@ namespace Seaweedfs.Client.Rest
     public class SeaweedfsExecuter : ISeaweedfsExecuter
     {
         private readonly ILogger _logger;
-        private readonly IJsonSerializer _jsonSerializer;
         private readonly IRestExecuteContextFactory _restExecuteContextFactory;
         private readonly IRestPipelineBuilder _restPipelineBuilder;
 
         /// <summary>Ctor
         /// </summary>
-        public SeaweedfsExecuter(ILoggerFactory loggerFactory, IJsonSerializer jsonSerializer, IRestExecuteContextFactory restExecuteContextFactory, IRestPipelineBuilder restPipelineBuilder)
+        public SeaweedfsExecuter(ILoggerFactory loggerFactory, IRestExecuteContextFactory restExecuteContextFactory, IRestPipelineBuilder restPipelineBuilder)
         {
             _logger = loggerFactory.CreateLogger(SeaweedfsConsts.LoggerName);
-            _jsonSerializer = jsonSerializer;
             _restExecuteContextFactory = restExecuteContextFactory;
             _restPipelineBuilder = restPipelineBuilder;
         }
@@ -65,7 +61,7 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>执行器执行
         /// </summary>
-        public async Task<T> ExecuteAsync<T>(Connection connection, ISeaweedfsRequest<T> request) where T : SeaweedfsResponse, new()
+        public async Task<T> ExecuteAsync<T>(ISeaweedfsRequest<T> request) where T : SeaweedfsResponse, new()
         {
             try
             {

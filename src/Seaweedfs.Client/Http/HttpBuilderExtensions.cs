@@ -1,5 +1,7 @@
 using RestSharp;
 using Seaweedfs.Client.Extensions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Seaweedfs.Client
 {
@@ -7,6 +9,38 @@ namespace Seaweedfs.Client
     /// </summary>
     public static class HttpBuilderExtensions
     {
+        private static readonly Dictionary<RestSharp.ParameterType, ParameterType> ParameterTypeMappers = new Dictionary<RestSharp.ParameterType, ParameterType>()
+        {
+            { RestSharp.ParameterType.Cookie,ParameterType.Cookie },
+            { RestSharp.ParameterType.GetOrPost,ParameterType.GetOrPost },
+            { RestSharp.ParameterType.HttpHeader,ParameterType.HttpHeader },
+            { RestSharp.ParameterType.QueryString,ParameterType.QueryString },
+            { RestSharp.ParameterType.QueryStringWithoutEncode,ParameterType.QueryStringWithoutEncode },
+            { RestSharp.ParameterType.RequestBody,ParameterType.RequestBody },
+            { RestSharp.ParameterType.UrlSegment,ParameterType.UrlSegment }
+        };
+
+        private static readonly Dictionary<RestSharp.Method, Method> MethodMappers = new Dictionary<RestSharp.Method, Method>()
+        {
+            { RestSharp.Method.GET,Method.GET },
+            { RestSharp.Method.POST,Method.POST },
+            { RestSharp.Method.PUT,Method.PUT },
+            { RestSharp.Method.DELETE,Method.DELETE },
+            { RestSharp.Method.COPY,Method.COPY },
+            { RestSharp.Method.HEAD,Method.HEAD },
+            { RestSharp.Method.MERGE,Method.MERGE },
+            { RestSharp.Method.OPTIONS,Method.OPTIONS },
+            { RestSharp.Method.PATCH,Method.PATCH },
+        };
+
+        private static readonly Dictionary<RestSharp.DataFormat, DataFormat> DataFormatMappers = new Dictionary<RestSharp.DataFormat, DataFormat>()
+        {
+            { RestSharp.DataFormat.Json,DataFormat.Json },
+            { RestSharp.DataFormat.Xml,DataFormat.Xml },
+            { RestSharp.DataFormat.None,DataFormat.None }
+        };
+
+
         /// <summary>根据HttpBuilder构建RequestRequest请求
         /// </summary>
         public static IRestRequest BuildRequest(this HttpBuilder builder)
@@ -46,69 +80,57 @@ namespace Seaweedfs.Client
             return request;
         }
 
-
+        /// <summary>将Method转换为Resharp.Method
+        /// </summary>
         private static RestSharp.Method ParseMethod(this Method method)
         {
-            switch (method)
-            {
-                case Method.GET:
-                default:
-                    return RestSharp.Method.GET;
-                case Method.POST:
-                    return RestSharp.Method.POST;
-                case Method.PUT:
-                    return RestSharp.Method.PUT;
-                case Method.DELETE:
-                    return RestSharp.Method.DELETE;
-                case Method.HEAD:
-                    return RestSharp.Method.HEAD;
-                case Method.OPTIONS:
-                    return RestSharp.Method.OPTIONS;
-                case Method.PATCH:
-                    return RestSharp.Method.PATCH;
-                case Method.MERGE:
-                    return RestSharp.Method.MERGE;
-                case Method.COPY:
-                    return RestSharp.Method.COPY;
-            }
+            var m = MethodMappers.FirstOrDefault(x => x.Value == method);
+            return m.Key;
         }
 
-
+        /// <summary>将DataFormat转换为Resharp.DataFormat
+        /// </summary>
         private static RestSharp.DataFormat ParseDataFormat(this DataFormat dataFormat)
         {
-            switch (dataFormat)
-            {
-                case DataFormat.Json:
-                    return RestSharp.DataFormat.Json;
-                case DataFormat.Xml:
-                    return RestSharp.DataFormat.Xml;
-                case DataFormat.None:
-                default:
-                    return RestSharp.DataFormat.None;
-            }
+            var f = DataFormatMappers.FirstOrDefault(x => x.Value == dataFormat);
+            return f.Key;
         }
 
+        /// <summary>将自定义ParameterType转换为RestSharp.ParameterType
+        /// </summary>
         private static RestSharp.ParameterType ParseParameterType(this ParameterType parameterType)
         {
-            switch (parameterType)
-            {
-                case ParameterType.GetOrPost:
-                default:
-                    return RestSharp.ParameterType.GetOrPost;
-                case ParameterType.Cookie:
-                    return RestSharp.ParameterType.Cookie;
-                case ParameterType.UrlSegment:
-                    return RestSharp.ParameterType.UrlSegment;
-                case ParameterType.HttpHeader:
-                    return RestSharp.ParameterType.HttpHeader;
-                case ParameterType.RequestBody:
-                    return RestSharp.ParameterType.RequestBody;
-                case ParameterType.QueryString:
-                    return RestSharp.ParameterType.QueryString;
-                case ParameterType.QueryStringWithoutEncode:
-                    return RestSharp.ParameterType.QueryStringWithoutEncode;
-            }
+            var p = ParameterTypeMappers.FirstOrDefault(x => x.Value == parameterType);
+            return p.Key;
         }
+
+        private static ParameterType TransferToParameterType(this RestSharp.ParameterType parameterType)
+        {
+            var p = ParameterTypeMappers.FirstOrDefault(x => x.Key == parameterType);
+            return p.Value;
+        }
+
+        private static DataFormat TransferToDataFormat(this RestSharp.DataFormat dataFormat)
+        {
+            var d = DataFormatMappers.FirstOrDefault(x => x.Key == dataFormat);
+            return d.Value;
+        }
+
+        /// <summary>从RestSharp Parameter转换参数
+        /// </summary>
+        public static Parameter TransferToParameter(this RestSharp.Parameter parameter)
+        {
+            var p = new Parameter()
+            {
+                Name = parameter.Name,
+                Value = parameter.Value,
+                ContentType = parameter.ContentType,
+                Type = parameter.Type.TransferToParameterType(),
+                DataFormat = parameter.DataFormat.TransferToDataFormat()
+            };
+            return p;
+        }
+
 
     }
 }

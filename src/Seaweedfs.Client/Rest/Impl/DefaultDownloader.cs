@@ -4,6 +4,7 @@ using Seaweedfs.Client.Util;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Seaweedfs.Client.Rest
@@ -14,89 +15,91 @@ namespace Seaweedfs.Client.Rest
     {
         private readonly object SyncObject = new object();
         private readonly ILogger _logger;
-
+        private readonly SeaweedfsOption _option;
+        private readonly ISeaweedfsExecuter _executer;
+        private readonly IConnectionManager _connectionManager;
         private readonly ConcurrentDictionary<ConnectionAddress, IRestClient> _clientDict = new ConcurrentDictionary<ConnectionAddress, IRestClient>();
 
         /// <summary>Ctor
         /// </summary>
-        public DefaultDownloader(ILoggerFactory loggerFactory)
+        public DefaultDownloader(ILoggerFactory loggerFactory, SeaweedfsOption option, ISeaweedfsExecuter executer, IConnectionManager connectionManager)
         {
             _logger = loggerFactory.CreateLogger(SeaweedfsConsts.LoggerName);
+            _option = option;
+            _executer = executer;
+            _connectionManager = connectionManager;
         }
 
-        /// <summary>异步下载文件
+        /// <summary>下载文件
         /// </summary>
-        /// <param name="url">下载文件地址</param>
-        /// <param name="savePath">文件保存路径</param>
+        /// <param name="fid">文件Fid</param>
+        /// <param name="savePath">保存路径</param>
         /// <returns></returns>
-        public Task<string> DownloadFileAsync(string url, string savePath)
+        public async Task<string> DownloadFileAsync(string fid, string savePath)
         {
-            _logger.LogDebug("【下载文件】url地址:{0},保存路径:{1}", url, savePath);
-            return Task.Factory.StartNew(() =>
+
+            Action<Stream> writer = s =>
             {
-                var client = GetDownloadClient(url);
-                var request = BuildRequestFromUrl(url);
-                using (var writer = File.OpenWrite(savePath))
+                using (var fs = File.OpenWrite(savePath))
                 {
-                    request.ResponseWriter = responseStream =>
-                    {
-                        using (responseStream)
-                        {
-                            responseStream.CopyTo(writer);
-                        }
-                    };
-                    var response = client.DownloadData(request);
+                    s.CopyTo(fs);
                 }
-                return savePath;
-            });
+            };
+            await DownloadInternal(fid, writer);
+            return savePath;
         }
 
-        /// <summary>异步下载文件
+        /// <summary>下载文件
         /// </summary>
-        /// <param name="url">下载文件地址</param>
-        /// <param name="writer">流文件操作</param>
+        /// <param name="fid">文件Fid</param>
+        /// <param name="writer">写入操作</param>
         /// <returns></returns>
-        public Task DownloadFileAsync(string url, Action<Stream> writer)
+        public async Task DownloadFileAsync(string fid, Action<Stream> writer)
         {
-            _logger.LogDebug("【下载文件】url地址:{0}");
-            return Task.Factory.StartNew(() =>
+            await DownloadInternal(fid, writer);
+        }
+
+
+        private async Task DownloadInternal(string fid, Action<Stream> writer)
+        {
+            ConnectionAddress connectionAddress;
+            if (_option.EnableReadJwt)
             {
-                var client = GetDownloadClient(url);
-                var request = BuildRequestFromUrl(url);
+                var lookupRequest = new LookupRequest(fid, true);
+                var lookupResponse = await _executer.ExecuteAsync(lookupRequest);
+                var url = lookupResponse.Locations.FirstOrDefault().Url;
+                connectionAddress = new ConnectionAddress(url);
+            }
+            else
+            {
+                var connection = _connectionManager.GetVolumeConnectionByVolumeIdOrFid(fid);
+                connectionAddress = connection.ConnectionAddress;
+            }
+            await Task.Factory.StartNew(() =>
+            {
+                var client = GetDownloadClient(connectionAddress);
+                IRestRequest request = new RestRequest("/{fid}");
+                request.AddUrlSegment("fid", fid);
                 request.ResponseWriter = writer;
                 var response = client.DownloadData(request);
             });
+
         }
 
-        /// <summary>根据url地址获取下载的客户端
+        /// <summary>获取下载的客户端
         /// </summary>
-        private IRestClient GetDownloadClient(string url)
+        private IRestClient GetDownloadClient(ConnectionAddress connectionAddress)
         {
-            var connectionAddress = new ConnectionAddress(UrlUtil.GetUrlAddress(url));
             if (!_clientDict.TryGetValue(connectionAddress, out IRestClient client))
             {
                 lock (SyncObject)
                 {
-                    client = new RestClient(UrlUtil.GetBaseUrl(url));
+
+                    client = new RestClient(UrlUtil.ToUrl(_option.Scheme, connectionAddress.IPAddress, connectionAddress.Port));
                     _clientDict.TryAdd(connectionAddress, client);
                 }
             }
             return client;
-        }
-
-        /// <summary>根据url构建请求
-        /// </summary>
-        private IRestRequest BuildRequestFromUrl(string url)
-        {
-            var uri = new Uri(url);
-            IRestRequest request = new RestRequest(uri.LocalPath);
-            //添加query
-            var querys = UrlUtil.GetQuerys(url);
-            foreach (var query in querys)
-            {
-                request.AddQueryParameter(query.Key, query.Value);
-            }
-            return request;
         }
 
     }

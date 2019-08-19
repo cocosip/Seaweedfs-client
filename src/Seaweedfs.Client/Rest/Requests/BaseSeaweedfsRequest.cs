@@ -12,6 +12,10 @@
         /// </summary>
         public abstract ServerType ServerType { get; set; }
 
+        /// <summary>指定服务器端地址
+        /// </summary>
+        public virtual string AssignServer { get; set; }
+
         /// <summary>文件Fid
         /// </summary>
         public virtual string Fid { get; set; }

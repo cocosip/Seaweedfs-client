@@ -11,6 +11,14 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public ServerType ServerType { get; set; }
 
+        /// <summary>指定的服务器端地址
+        /// </summary>
+        public string AssignServer { get; set; }
+
+        /// <summary>HttpBuilder
+        /// </summary>
+        public HttpBuilder Builder { get; set; }
+
         /// <summary>请求
         /// </summary>
         public ISeaweedfsRequest Request { get; set; }

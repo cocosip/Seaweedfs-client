@@ -3,9 +3,7 @@ using Seaweedfs.Client.Scheduling;
 using Seaweedfs.Client.Util;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 
 namespace Seaweedfs.Client.Rest
 {
@@ -77,14 +75,14 @@ namespace Seaweedfs.Client.Rest
             {
 
                 var request = new LookupVolumeRequest(volumeIdOrFid);
-                var task = _seaweedfsExecuter.ExecuteAsync(_masterConnection, request);
+                var task = _seaweedfsExecuter.ExecuteAsync(request);
                 task.Wait();
                 //查询Volume返回
                 var lookupVolumeResponse = task.Result;
                 if (lookupVolumeResponse.IsSuccessful)
                 {
                     //成功
-                    lock(SyncObject)
+                    lock (SyncObject)
                     {
                         //连接地址
                         connectionAddress = new ConnectionAddress(lookupVolumeResponse.Locations.FirstOrDefault().Url);
@@ -173,7 +171,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         private void StartSyncMasterLeaderTask()
         {
-            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.SyncMasterLeader", SyncMasterLeader, 1000, _option.SyncMasterLeaderInterval);
+            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.SyncMasterLeader", SyncMasterLeader, 1000, _option.SyncMasterLeaderInterval * 1000);
         }
 
         /// <summary>结束同步Master中Leader的任务
@@ -197,7 +195,7 @@ namespace Seaweedfs.Client.Rest
                 //查询集群中的状态
                 var request = new ClusterStatusRequest();
                 //执行结果
-                var task = _seaweedfsExecuter.ExecuteAsync(_masterConnection, request);
+                var task = _seaweedfsExecuter.ExecuteAsync(request);
                 task.Wait();
                 //集群状态
                 var clusterStatus = task.Result;
@@ -212,7 +210,7 @@ namespace Seaweedfs.Client.Rest
                 if (!clusterStatus.IsLeader || clusterStatus.Leader != _masterConnection.ConnectionAddress.ToString())
                 {
                     //更新当前Master连接
-                    lock(SyncObject)
+                    lock (SyncObject)
                     {
                         var connectionAddress = new ConnectionAddress(clusterStatus.Leader);
                         _masterConnection = _connectionFactory.CreateConnection(connectionAddress, ConnectionType.Master);

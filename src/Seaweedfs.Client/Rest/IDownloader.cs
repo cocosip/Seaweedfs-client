@@ -8,18 +8,18 @@ namespace Seaweedfs.Client.Rest
     /// </summary>
     public interface IDownloader
     {
-        /// <summary>异步下载文件
+        /// <summary>下载文件
         /// </summary>
-        /// <param name="url">下载文件地址</param>
-        /// <param name="savePath">文件保存路径</param>
+        /// <param name="fid">文件Fid</param>
+        /// <param name="savePath">保存路径</param>
         /// <returns></returns>
-        Task<string> DownloadFileAsync(string url, string savePath);
+        Task<string> DownloadFileAsync(string fid, string savePath);
 
-        /// <summary>异步下载文件
+        /// <summary>下载文件
         /// </summary>
-        /// <param name="url">下载文件地址</param>
-        /// <param name="writer">流文件操作</param>
+        /// <param name="fid">文件Fid</param>
+        /// <param name="writer">写入操作</param>
         /// <returns></returns>
-        Task DownloadFileAsync(string url, Action<Stream> writer);
+        Task DownloadFileAsync(string fid, Action<Stream> writer);
     }
 }

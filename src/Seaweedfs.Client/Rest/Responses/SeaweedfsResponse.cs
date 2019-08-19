@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace Seaweedfs.Client.Rest
@@ -22,5 +23,9 @@ namespace Seaweedfs.Client.Rest
         /// <summary>异常信息内容
         /// </summary>
         public string ErrorMessage { get; set; }
+
+        /// <summary>返回头部
+        /// </summary>
+        public List<Parameter> Headers { get; set; } = new List<Parameter>();
     }
 }

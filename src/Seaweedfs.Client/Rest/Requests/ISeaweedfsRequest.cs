@@ -12,6 +12,10 @@
         /// </summary>
         ServerType ServerType { get; set; }
 
+        /// <summary>指定服务器端地址
+        /// </summary>
+        string AssignServer { get; set; }
+
         /// <summary>文件Fid,部分接口有这个参数
         /// </summary>
         string Fid { get; set; }

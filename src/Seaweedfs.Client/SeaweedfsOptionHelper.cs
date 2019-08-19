@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
+using static Seaweedfs.Client.SeaweedfsOption;
 
 namespace Seaweedfs.Client
 {
@@ -45,6 +46,16 @@ namespace Seaweedfs.Client
             option.Scheme = root.SelectSingleNode("Scheme").InnerText;
             //Master同步时间间隔
             option.SyncMasterLeaderInterval = int.Parse(root.SelectSingleNode("SyncMasterLeaderInterval").InnerText);
+            //是否启用jwt
+            option.EnableJwt = bool.Parse(root.SelectSingleNode("EnableJwt").InnerText);
+            //Jwt超时时间
+            option.JwtTimeoutSeconds = int.Parse(root.SelectSingleNode("JwtTimeoutSeconds").InnerText);
+
+            //是否启用读取文件jwt
+            option.EnableReadJwt = bool.Parse(root.SelectSingleNode("EnableReadJwt").InnerText);
+            //读文件Jwt
+            option.ReadJwtTimeoutSeconds = int.Parse(root.SelectSingleNode("ReadJwtTimeoutSeconds").InnerText);
+
             //关闭读取流
             reader.Close();
             return option;
@@ -86,6 +97,31 @@ namespace Seaweedfs.Client
                 sb.Append("<SyncMasterLeaderInterval>");
                 sb.AppendLine(option.SyncMasterLeaderInterval.ToString());
                 sb.AppendLine("</SyncMasterLeaderInterval>");
+
+                //Master Leader同步时间间隔
+                sb.Append("<SyncMasterLeaderInterval>");
+                sb.AppendLine(option.SyncMasterLeaderInterval.ToString());
+                sb.AppendLine("</SyncMasterLeaderInterval>");
+
+                //是否开启Jwt认证
+                sb.Append("<EnableJwt>");
+                sb.AppendLine(option.EnableJwt.ToString());
+                sb.AppendLine("</EnableJwt>");
+
+                //Jwt超时时间
+                sb.Append("<JwtTimeoutSeconds>");
+                sb.AppendLine(option.JwtTimeoutSeconds.ToString());
+                sb.AppendLine("</JwtTimeoutSeconds>");
+
+                //是否开启读取Jwt认证
+                sb.Append("<EnableReadJwt>");
+                sb.AppendLine(option.EnableReadJwt.ToString());
+                sb.AppendLine("</EnableReadJwt>");
+
+                //读取的Jwt超时时间
+                sb.Append("<ReadJwtTimeoutSeconds>");
+                sb.AppendLine(option.ReadJwtTimeoutSeconds.ToString());
+                sb.AppendLine("</ReadJwtTimeoutSeconds>");
 
                 sb.AppendLine("</Seaweedfs>");
                 return sb.ToString();
