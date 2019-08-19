@@ -39,5 +39,13 @@
         /// <param name="fid">文件Fid</param>
         /// <returns></returns>
         string GetReadJwt(string fid);
+
+        /// <summary>运行
+        /// </summary>
+        void Start();
+
+        /// <summary>停止
+        /// </summary>
+        void Shutdown();
     }
 }

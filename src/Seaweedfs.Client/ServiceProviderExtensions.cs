@@ -16,6 +16,10 @@ namespace Seaweedfs.Client
             var connectionManager = provider.GetService<IConnectionManager>();
             connectionManager.Start();
 
+            //Jwt管理器
+            var jwtManager = provider.GetService<IJwtManager>();
+            jwtManager.Start();
+
             //Pipeline
             var pipelineBuilder = provider.GetService<IRestPipelineBuilder>();
             pipelineBuilder

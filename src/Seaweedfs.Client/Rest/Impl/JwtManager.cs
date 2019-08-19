@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Seaweedfs.Client.Scheduling;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Seaweedfs.Client.Rest
 {
@@ -8,7 +10,11 @@ namespace Seaweedfs.Client.Rest
     /// </summary>
     public class JwtManager : IJwtManager
     {
+        private bool _isRunning = false;
+        private readonly object SyncObject = new object();
         private readonly ILogger _logger;
+        private readonly IScheduleService _scheduleService;
+        private readonly SeaweedfsOption _option;
 
         /// <summary>通过Assign获取Jwt的集合
         /// </summary>
@@ -24,9 +30,11 @@ namespace Seaweedfs.Client.Rest
 
         /// <summary>Ctor
         /// </summary>
-        public JwtManager(ILoggerFactory loggerFactory)
+        public JwtManager(ILoggerFactory loggerFactory, IScheduleService scheduleService, SeaweedfsOption option)
         {
             _logger = loggerFactory.CreateLogger(SeaweedfsConsts.LoggerName);
+            _scheduleService = scheduleService;
+            _option = option;
         }
 
         /// <summary>添加Assign Jwt
@@ -130,6 +138,130 @@ namespace Seaweedfs.Client.Rest
                 _logger.LogError("获取Lookup Jwt失败,无法找到Fid为:{0} 的Jwt", fid);
             }
             return jwtToken?.Jwt;
+        }
+
+        /// <summary>运行
+        /// </summary>
+        public void Start()
+        {
+            if (_isRunning)
+            {
+                return;
+            }
+            //查询超时的
+            if (_option.EnableJwt)
+            {
+                StartScanTimeoutJwtTask();
+            }
+            if (_option.EnableReadJwt)
+            {
+                StartScanTimeoutReadJwtTask();
+            }
+            _isRunning = true;
+        }
+
+        /// <summary>停止
+        /// </summary>
+        public void Shutdown()
+        {
+            if (_option.EnableJwt)
+            {
+                StopScanTimeoutJwtTask();
+            }
+            if (_option.EnableReadJwt)
+            {
+                StopScanTimeoutReadJwtTask();
+            }
+            _isRunning = false;
+        }
+
+
+        /// <summary>查询超时的Jwt并且移除任务
+        /// </summary>
+        private void StartScanTimeoutJwtTask()
+        {
+            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.ScanTimeoutJwt", ScanTimeoutJwt, 1000, 1000);
+        }
+
+        /// <summary>停止查询超时的Jwt并且移除任务
+        /// </summary>
+        private void StopScanTimeoutJwtTask()
+        {
+            _scheduleService.StopTask($"{SeaweedfsConsts.Seaweedfs}.ScanTimeoutJwt");
+        }
+
+        /// <summary>查询超时的Read Jwt并且移除任务
+        /// </summary>
+        private void StartScanTimeoutReadJwtTask()
+        {
+            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.ScanTimeoutReadJwt", ScanTimeoutReadJwt, 1000, 1000);
+        }
+
+        /// <summary>停止查询超时的ReadJwt并且移除任务
+        /// </summary>
+        private void StopScanTimeoutReadJwtTask()
+        {
+            _scheduleService.StopTask($"{SeaweedfsConsts.Seaweedfs}.ScanTimeoutReadJwt");
+        }
+
+        /// <summary>查询超时的Jwt
+        /// </summary>
+        private void ScanTimeoutJwt()
+        {
+            var assignTimeoutKeyList = new List<string>();
+            foreach (var entry in _assignJwtDict)
+            {
+                if (entry.Value.IsTimeout(_option.JwtTimeoutSeconds))
+                {
+                    assignTimeoutKeyList.Add(entry.Key);
+                }
+            }
+            foreach (var key in assignTimeoutKeyList)
+            {
+                if (_assignJwtDict.TryRemove(key, out JwtToken jwtToken))
+                {
+                    _logger.LogDebug("移除超时Jwt,Fid:{0},Token:{1}", key, jwtToken.Jwt);
+                }
+            }
+
+            var lookUpTimeoutKeyList = new List<string>();
+            foreach (var entry in _lookupJwtDict)
+            {
+                if (entry.Value.IsTimeout(_option.JwtTimeoutSeconds))
+                {
+                    lookUpTimeoutKeyList.Add(entry.Key);
+                }
+            }
+            foreach (var key in lookUpTimeoutKeyList)
+            {
+                if (_lookupJwtDict.TryRemove(key, out JwtToken jwtToken))
+                {
+                    _logger.LogDebug("移除超时Jwt,Fid:{0},Token:{1}", key, jwtToken.Jwt);
+                }
+            }
+
+        }
+
+
+        /// <summary>查询超时的ReadJwt
+        /// </summary>
+        private void ScanTimeoutReadJwt()
+        {
+            var readJwtTimeoutKeyList = new List<string>();
+            foreach (var entry in _readAccessJwtDict)
+            {
+                if (entry.Value.IsTimeout(_option.ReadJwtTimeoutSeconds))
+                {
+                    readJwtTimeoutKeyList.Add(entry.Key);
+                }
+            }
+            foreach (var key in readJwtTimeoutKeyList)
+            {
+                if (_readAccessJwtDict.TryRemove(key, out JwtToken jwtToken))
+                {
+                    _logger.LogDebug("移除超时Jwt,Fid:{0},Token:{1}", key, jwtToken.Jwt);
+                }
+            }
         }
     }
 }

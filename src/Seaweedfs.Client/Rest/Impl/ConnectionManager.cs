@@ -12,7 +12,7 @@ namespace Seaweedfs.Client.Rest
     public class ConnectionManager : IConnectionManager
     {
         private bool _isRunning = false;
-        private object SyncObject = new object();
+        private readonly object SyncObject = new object();
         private readonly ILogger _logger;
         private readonly IScheduleService _scheduleService;
         private readonly SeaweedfsOption _option;
@@ -133,6 +133,7 @@ namespace Seaweedfs.Client.Rest
             _masterConnection = CreateMasterConnection();
             //Master Leader同步
             StartSyncMasterLeaderTask();
+            _isRunning = true;
         }
 
 
@@ -141,6 +142,7 @@ namespace Seaweedfs.Client.Rest
         public void Shutdown()
         {
             StopSyncMasterLeaderTask();
+            _isRunning = false;
         }
 
 

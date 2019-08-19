@@ -110,7 +110,10 @@ namespace Seaweedfs.Client.Rest
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
         public async Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, string filePath)
         {
-            var request = new UploadFileRequest(assignFileKey.Fid, filePath);
+            var request = new UploadFileRequest(assignFileKey.Fid, filePath)
+            {
+                AssignServer = assignFileKey.Url
+            };
             return await UploadInternal(assignFileKey, request);
         }
 
@@ -122,7 +125,10 @@ namespace Seaweedfs.Client.Rest
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
         public async Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, byte[] fileBytes, string fileName)
         {
-            var request = new UploadFileRequest(assignFileKey.Fid, fileBytes, fileName);
+            var request = new UploadFileRequest(assignFileKey.Fid, fileBytes, fileName)
+            {
+                AssignServer = assignFileKey.Url
+            };
             return await UploadInternal(assignFileKey, request);
         }
 
@@ -136,7 +142,10 @@ namespace Seaweedfs.Client.Rest
         /// <returns><see cref="Seaweedfs.Client.Rest.UploadFileResponse"/></returns>
         public async Task<UploadFileResponse> UploadFile(AssignFileKey assignFileKey, Action<Stream> writer, string fileName, long contentLength)
         {
-            var request = new UploadFileRequest(assignFileKey.Fid, writer, fileName, contentLength);
+            var request = new UploadFileRequest(assignFileKey.Fid, writer, fileName, contentLength)
+            {
+                AssignServer = assignFileKey.Url
+            };
             return await UploadInternal(assignFileKey, request);
         }
 
