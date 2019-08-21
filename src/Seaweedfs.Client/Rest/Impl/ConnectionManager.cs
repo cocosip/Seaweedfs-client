@@ -173,14 +173,14 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         private void StartSyncMasterLeaderTask()
         {
-            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.SyncMasterLeader", SyncMasterLeader, 1000, _option.SyncMasterLeaderInterval * 1000);
+            _scheduleService.StartTask(SeaweedfsConsts.ScheduleTaskName.SyncMasterLeader, SyncMasterLeader, 1000, _option.SyncMasterLeaderInterval * 1000);
         }
 
         /// <summary>结束同步Master中Leader的任务
         /// </summary>
         private void StopSyncMasterLeaderTask()
         {
-            _scheduleService.StopTask($"{SeaweedfsConsts.Seaweedfs}.SyncMasterLeader");
+            _scheduleService.StopTask(SeaweedfsConsts.ScheduleTaskName.SyncMasterLeader);
         }
 
         /// <summary>同步集群中MasterLeader

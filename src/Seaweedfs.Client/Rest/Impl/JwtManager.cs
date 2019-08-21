@@ -11,7 +11,6 @@ namespace Seaweedfs.Client.Rest
     public class JwtManager : IJwtManager
     {
         private bool _isRunning = false;
-        private readonly object SyncObject = new object();
         private readonly ILogger _logger;
         private readonly IScheduleService _scheduleService;
         private readonly SeaweedfsOption _option;
@@ -180,28 +179,28 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         private void StartScanTimeoutJwtTask()
         {
-            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.ScanTimeoutJwt", ScanTimeoutJwt, 1000, 1000);
+            _scheduleService.StartTask(SeaweedfsConsts.ScheduleTaskName.ScanTimeoutJwt, ScanTimeoutJwt, 1000, 1000);
         }
 
         /// <summary>停止查询超时的Jwt并且移除任务
         /// </summary>
         private void StopScanTimeoutJwtTask()
         {
-            _scheduleService.StopTask($"{SeaweedfsConsts.Seaweedfs}.ScanTimeoutJwt");
+            _scheduleService.StopTask(SeaweedfsConsts.ScheduleTaskName.ScanTimeoutJwt);
         }
 
         /// <summary>查询超时的Read Jwt并且移除任务
         /// </summary>
         private void StartScanTimeoutReadJwtTask()
         {
-            _scheduleService.StartTask($"{SeaweedfsConsts.Seaweedfs}.ScanTimeoutReadJwt", ScanTimeoutReadJwt, 1000, 1000);
+            _scheduleService.StartTask(SeaweedfsConsts.ScheduleTaskName.ScanTimeoutReadJwt, ScanTimeoutReadJwt, 1000, 1000);
         }
 
         /// <summary>停止查询超时的ReadJwt并且移除任务
         /// </summary>
         private void StopScanTimeoutReadJwtTask()
         {
-            _scheduleService.StopTask($"{SeaweedfsConsts.Seaweedfs}.ScanTimeoutReadJwt");
+            _scheduleService.StopTask(SeaweedfsConsts.ScheduleTaskName.ScanTimeoutReadJwt);
         }
 
         /// <summary>查询超时的Jwt
