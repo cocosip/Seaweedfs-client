@@ -141,7 +141,6 @@ namespace Seaweedfs.Client.Grpc.Content
     /// </summary>
     public class VolumeInformation
     {
-
         /// <summary>Id
         /// </summary>
         public int Id { get; set; }

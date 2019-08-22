@@ -2,6 +2,15 @@
 
 namespace Seaweedfs.Client.Grpc.Content
 {
+    /// <summary>查询Volume
+    /// </summary>
+    public class LookupVolume
+    {
+        /// <summary>VolumeIdLocations
+        /// </summary>
+        public List<VolumeIdLocation> VolumeIdLocations { get; set; } = new List<VolumeIdLocation>();
+    }
+
     /// <summary>VolumeId位置
     /// </summary>
     public class VolumeIdLocation

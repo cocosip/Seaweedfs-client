@@ -1,9 +1,7 @@
 ﻿using Seaweedfs.Client.Grpc.Content;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 
 namespace Seaweedfs.Client.Grpc
 {
@@ -58,34 +56,29 @@ namespace Seaweedfs.Client.Grpc
 
         /// <summary>查询Volume
         /// </summary>
-        /// <param name="volumeIds">VolumeId集合</param>
         /// <param name="collection">Collection</param>
+        /// <param name="volumeIds">VolumeId集合</param>
         /// <returns></returns>
-        public async Task<List<VolumeIdLocation>> LookupVolume(List<string> volumeIds = null, string collection = "")
+        public async Task<LookupVolume> LookupVolume(string collection = "", params string[] volumeIds)
         {
             var client = _clientManager.GetMasterClient();
-            if (volumeIds == null)
-            {
-                volumeIds = new List<string>();
-            }
             var request = new MasterPb.LookupVolumeRequest()
             {
                 Collection = collection,
             };
             request.VolumeIds.Add(volumeIds);
             var response = await client.LookupVolumeAsync(request);
-            var volumeIdLocations = new List<VolumeIdLocation>();
-            foreach (var item in response.VolumeIdLocations)
+            var lookupVolume = new LookupVolume()
             {
-                volumeIdLocations.Add(new VolumeIdLocation()
+                VolumeIdLocations = response.VolumeIdLocations.Select(x => new VolumeIdLocation()
                 {
-                    VolumeId = item.VolumeId,
-                    Locations = item.Locations.Select(x => new Location(x.Url, x.PublicUrl)).ToList()
-                });
-            }
-            return volumeIdLocations;
-        }
+                    VolumeId = x.VolumeId,
+                    Locations = x.Locations.Select(l => new Location(l.Url, l.PublicUrl)).ToList()
+                }).ToList()
+            };
 
+            return lookupVolume;
+        }
 
         /// <summary>获取统计信息
         /// </summary>
@@ -137,7 +130,8 @@ namespace Seaweedfs.Client.Grpc
             var client = _clientManager.GetMasterClient();
             var response = await client.VolumeListAsync(new MasterPb.VolumeListRequest());
 
-            Func<MasterPb.VolumeEcShardInformationMessage, VolumeEcShardInformation> ecShardFunc = e =>
+            #region functions
+            VolumeEcShardInformation ecShardFunc(MasterPb.VolumeEcShardInformationMessage e)
             {
                 return new VolumeEcShardInformation()
                 {
@@ -145,9 +139,9 @@ namespace Seaweedfs.Client.Grpc
                     Collection = e.Collection,
                     EcIndexBits = (int)e.EcIndexBits
                 };
-            };
+            }
 
-            Func<MasterPb.VolumeInformationMessage, VolumeInformation> volumeFunc = v =>
+            VolumeInformation volumeFunc(MasterPb.VolumeInformationMessage v)
             {
                 return new VolumeInformation()
                 {
@@ -164,9 +158,9 @@ namespace Seaweedfs.Client.Grpc
                     CompactRevision = (int)v.CompactRevision,
                     ModifiedAtSecond = (long)v.ModifiedAtSecond
                 };
-            };
+            }
 
-            Func<MasterPb.DataNodeInfo, DataNode> dataNodeFunc = d =>
+            DataNode dataNodeFunc(MasterPb.DataNodeInfo d)
             {
                 return new DataNode()
                 {
@@ -178,7 +172,8 @@ namespace Seaweedfs.Client.Grpc
                     EcShareInfos = d.EcShardInfos.Select(ecShardFunc).ToList(),
                     VolumeInfos = d.VolumeInfos.Select(volumeFunc).ToList()
                 };
-            };
+            }
+            #endregion
 
             var volumeList = new VolumeList()
             {
@@ -220,5 +215,34 @@ namespace Seaweedfs.Client.Grpc
 
             return volumeList;
         }
+
+        /// <summary>获取Master配置
+        /// </summary>
+        public async Task<MasterConfiguration> GetMasterConfiguration()
+        {
+            var client = _clientManager.GetMasterClient();
+            var response = await client.GetMasterConfigurationAsync(new MasterPb.GetMasterConfigurationRequest());
+            return new MasterConfiguration(response.MetricsAddress, (int)response.MetricsIntervalSeconds);
+        }
+
+        /// <summary>批量删除文件
+        /// </summary>
+        /// <param name="fileIds">文件Fid集合</param>
+        /// <returns></returns>
+        public async Task<List<BatchDelete>> BatchDelete(params string[] fileIds)
+        {
+            var client = _clientManager.GetVolumeClient();
+            var request = new VolumeServerPb.BatchDeleteRequest();
+            request.FileIds.Add(fileIds);
+            var response = await client.BatchDeleteAsync(request);
+            return response.Results.Select(x => new BatchDelete()
+            {
+                FileId = x.FileId,
+                Size = (int)x.Size,
+                Status = (int)x.Status,
+                Version = (int)x.Version
+            }).ToList();
+        }
+
     }
 }

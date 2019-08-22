@@ -22,10 +22,10 @@ namespace Seaweedfs.Client.Grpc
 
         /// <summary>查询Volume
         /// </summary>
-        /// <param name="volumeIds">VolumeId集合</param>
         /// <param name="collection">Collection</param>
+        /// <param name="volumeIds">VolumeId集合</param>
         /// <returns></returns>
-        Task<List<VolumeIdLocation>> LookupVolume(List<string> volumeIds = null, string collection = "");
+        Task<LookupVolume> LookupVolume(string collection = "", params string[] volumeIds);
 
         /// <summary>获取统计信息
         /// </summary>
@@ -45,5 +45,15 @@ namespace Seaweedfs.Client.Grpc
         /// </summary>
         /// <returns></returns>
         Task<VolumeList> GetVolumeList();
+
+        /// <summary>获取Master配置
+        /// </summary>
+        Task<MasterConfiguration> GetMasterConfiguration();
+
+        /// <summary>批量删除文件
+        /// </summary>
+        /// <param name="fileIds">文件Fid集合</param>
+        /// <returns></returns>
+        Task<List<BatchDelete>> BatchDelete(params string[] fileIds);
     }
 }
