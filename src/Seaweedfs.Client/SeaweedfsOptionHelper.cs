@@ -55,6 +55,22 @@ namespace Seaweedfs.Client
             option.EnableReadJwt = bool.Parse(root.SelectSingleNode("EnableReadJwt").InnerText);
             //读文件Jwt
             option.ReadJwtTimeoutSeconds = int.Parse(root.SelectSingleNode("ReadJwtTimeoutSeconds").InnerText);
+            //是否启用Grpc Tls
+            option.EnableTls = bool.Parse(root.SelectSingleNode("EnableTls").InnerText);
+            //Grpc CA证书位置
+            option.Ca = root.SelectSingleNode("Ca").InnerText;
+            //Master证书位置
+            option.MasterCert = root.SelectSingleNode("MasterCert").InnerText;
+            //Master证书Key
+            option.MasterKey = root.SelectSingleNode("MasterKey").InnerText;
+            //Volume证书位置
+            option.VolumeCert = root.SelectSingleNode("VolumeCert").InnerText;
+            //Volume证书Key
+            option.VolumeKey = root.SelectSingleNode("VolumeKey").InnerText;
+            //Filer证书位置
+            option.FilerCert = root.SelectSingleNode("FilerCert").InnerText;
+            //Filer证书Key
+            option.FilerKey = root.SelectSingleNode("FilerKey").InnerText;
 
             //关闭读取流
             reader.Close();
@@ -122,6 +138,39 @@ namespace Seaweedfs.Client
                 sb.Append("<ReadJwtTimeoutSeconds>");
                 sb.AppendLine(option.ReadJwtTimeoutSeconds.ToString());
                 sb.AppendLine("</ReadJwtTimeoutSeconds>");
+
+                //是否启用Grpc Tls
+                sb.Append("<EnableTls>");
+                sb.AppendLine(option.EnableJwt.ToString());
+                sb.AppendLine("</EnableTls>");
+                //Ca证书位置
+                sb.Append("<Ca>");
+                sb.AppendLine(option.Ca.ToString());
+                sb.AppendLine("</Ca>");
+                //Master证书位置
+                sb.Append("<MasterCert>");
+                sb.AppendLine(option.MasterCert);
+                sb.AppendLine("</MasterCert>");
+                //Master证书Key
+                sb.Append("<MasterKey>");
+                sb.AppendLine(option.MasterKey);
+                sb.AppendLine("</MasterKey>");
+                //Volume证书位置
+                sb.Append("<VolumeCert>");
+                sb.AppendLine(option.VolumeCert);
+                sb.AppendLine("</VolumeCert>");
+                //Volume证书Key
+                sb.Append("<VolumeKey>");
+                sb.AppendLine(option.VolumeKey);
+                sb.AppendLine("</VolumeKey>");
+                //Filer证书位置
+                sb.Append("<FilerCert>");
+                sb.AppendLine(option.FilerCert);
+                sb.AppendLine("</FilerCert>");
+                //Filer证书Key
+                sb.Append("<FilerKey>");
+                sb.AppendLine(option.FilerKey);
+                sb.AppendLine("</FilerKey>");
 
                 sb.AppendLine("</Seaweedfs>");
                 return sb.ToString();

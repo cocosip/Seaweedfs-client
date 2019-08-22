@@ -34,6 +34,38 @@ namespace Seaweedfs.Client
         /// </summary>
         public int ReadJwtTimeoutSeconds { get; set; } = 10;
 
+        /// <summary>是否启用GrpcTls认证
+        /// </summary>
+        public bool EnableTls { get; set; }
+
+        /// <summary>CA证书
+        /// </summary>
+        public string Ca { get; set; }
+
+        /// <summary>Master证书位置
+        /// </summary>
+        public string MasterCert { get; set; }
+
+        /// <summary>Master证书Key
+        /// </summary>
+        public string MasterKey { get; set; }
+
+        /// <summary>Volume证书位置
+        /// </summary>
+        public string VolumeCert { get; set; }
+
+        /// <summary>Volume证书Key
+        /// </summary>
+        public string VolumeKey { get; set; }
+
+        /// <summary>Filer证书位置
+        /// </summary>
+        public string FilerCert { get; set; }
+
+        /// <summary>Filer证书Key
+        /// </summary>
+        public string FilerKey { get; set; }
+
         /// <summary>Master
         /// </summary>
         public class MasterServer

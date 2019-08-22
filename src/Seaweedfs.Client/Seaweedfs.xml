@@ -18,4 +18,21 @@
   <EnableReadJwt>false</EnableReadJwt>
   <![CDATA[读文件Jwt超时时间,默认10s]]>
   <ReadJwtTimeoutSeconds>10</ReadJwtTimeoutSeconds>
+  <![CDATA[是否启用Grpc Tls认证]]>
+  <EnableTls>false</EnableTls>
+  <![CDATA[CA证书位置]]>
+  <Ca></Ca>
+  <![CDATA[Master证书位置]]>
+  <MasterCert></MasterCert>
+  <![CDATA[Master证书Key]]>
+  <MasterKey></MasterKey>
+  <![CDATA[Volume证书位置]]>
+  <VolumeCert></VolumeCert>
+  <![CDATA[Volume证书Key]]>
+  <VolumeKey></VolumeKey>
+  <![CDATA[Filer证书位置]]>
+  <FilerCert></FilerCert>
+  <![CDATA[Filer证书Key]]>
+  <FilerKey></FilerKey>
+
 </Seaweedfs>
