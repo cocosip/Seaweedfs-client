@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Seaweedfs.Client.Grpc;
 using Seaweedfs.Client.Rest;
 using Seaweedfs.Client.Scheduling;
 using Seaweedfs.Client.Serializing;
@@ -45,6 +46,8 @@ namespace Seaweedfs.Client
                 .AddSingleton<IDownloader, DefaultDownloader>()
                 .AddTransient<ISeaweedfsExecuter, SeaweedfsExecuter>()
                 .AddTransient<ISeaweedfsClient, SeaweedfsClient>()
+                .AddTransient<ISeaweedfsGrpcClient, SeaweedfsGrpcClient>()
+                .AddSingleton<IGrpcClientManager, GrpcClientManager>()
                 .RegisterPipeline();
             return services;
         }

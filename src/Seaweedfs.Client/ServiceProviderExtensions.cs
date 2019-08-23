@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Seaweedfs.Client.Grpc;
 using Seaweedfs.Client.Rest;
 using System;
 
@@ -19,6 +20,10 @@ namespace Seaweedfs.Client
             //Jwt管理器
             var jwtManager = provider.GetService<IJwtManager>();
             jwtManager.Start();
+
+            //grpc 连接管理器
+            var grpcClientManager = provider.GetService<IGrpcClientManager>();
+            grpcClientManager.Start();
 
             //Pipeline
             var pipelineBuilder = provider.GetService<IRestPipelineBuilder>();

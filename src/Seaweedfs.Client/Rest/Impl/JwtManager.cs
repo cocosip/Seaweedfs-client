@@ -148,11 +148,11 @@ namespace Seaweedfs.Client.Rest
                 return;
             }
             //查询超时的
-            if (_option.EnableJwt)
+            if (_option.RestOption.EnableJwt)
             {
                 StartScanTimeoutJwtTask();
             }
-            if (_option.EnableReadJwt)
+            if (_option.RestOption.EnableReadJwt)
             {
                 StartScanTimeoutReadJwtTask();
             }
@@ -163,11 +163,11 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public void Shutdown()
         {
-            if (_option.EnableJwt)
+            if (_option.RestOption.EnableJwt)
             {
                 StopScanTimeoutJwtTask();
             }
-            if (_option.EnableReadJwt)
+            if (_option.RestOption.EnableReadJwt)
             {
                 StopScanTimeoutReadJwtTask();
             }
@@ -210,7 +210,7 @@ namespace Seaweedfs.Client.Rest
             var assignTimeoutKeyList = new List<string>();
             foreach (var entry in _assignJwtDict)
             {
-                if (entry.Value.IsTimeout(_option.JwtTimeoutSeconds))
+                if (entry.Value.IsTimeout(_option.RestOption.JwtTimeoutSeconds))
                 {
                     assignTimeoutKeyList.Add(entry.Key);
                 }
@@ -226,7 +226,7 @@ namespace Seaweedfs.Client.Rest
             var lookUpTimeoutKeyList = new List<string>();
             foreach (var entry in _lookupJwtDict)
             {
-                if (entry.Value.IsTimeout(_option.JwtTimeoutSeconds))
+                if (entry.Value.IsTimeout(_option.RestOption.JwtTimeoutSeconds))
                 {
                     lookUpTimeoutKeyList.Add(entry.Key);
                 }
@@ -249,7 +249,7 @@ namespace Seaweedfs.Client.Rest
             var readJwtTimeoutKeyList = new List<string>();
             foreach (var entry in _readAccessJwtDict)
             {
-                if (entry.Value.IsTimeout(_option.ReadJwtTimeoutSeconds))
+                if (entry.Value.IsTimeout(_option.RestOption.ReadJwtTimeoutSeconds))
                 {
                     readJwtTimeoutKeyList.Add(entry.Key);
                 }

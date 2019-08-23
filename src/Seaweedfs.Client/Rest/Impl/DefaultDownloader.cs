@@ -63,7 +63,7 @@ namespace Seaweedfs.Client.Rest
         private async Task DownloadInternal(string fid, Action<Stream> writer)
         {
             ConnectionAddress connectionAddress;
-            if (_option.EnableReadJwt)
+            if (_option.RestOption.EnableReadJwt)
             {
                 var lookupRequest = new LookupRequest(fid, true);
                 var lookupResponse = await _executer.ExecuteAsync(lookupRequest);
@@ -95,7 +95,7 @@ namespace Seaweedfs.Client.Rest
                 lock (SyncObject)
                 {
 
-                    client = new RestClient(UrlUtil.ToUrl(_option.Scheme, connectionAddress.IPAddress, connectionAddress.Port));
+                    client = new RestClient(UrlUtil.ToUrl(_option.RestOption.Scheme, connectionAddress.IPAddress, connectionAddress.Port));
                     _clientDict.TryAdd(connectionAddress, client);
                 }
             }

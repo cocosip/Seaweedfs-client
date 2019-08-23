@@ -1,4 +1,5 @@
 using Seaweedfs.Client.Extensions;
+using Seaweedfs.Client.Util;
 using System;
 
 namespace Seaweedfs.Client.Rest

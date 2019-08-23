@@ -45,8 +45,8 @@ namespace Seaweedfs.Sample
         {
             Console.WriteLine("-------------上传文件测试---------");
             Stopwatch watch = new Stopwatch();
-            //var dir = new DirectoryInfo(@"D:\Pictures");
-            var dir = new DirectoryInfo(@"D:\DicomTest\ZHOUNING");
+            var dir = new DirectoryInfo(@"D:\Pictures");
+            //var dir = new DirectoryInfo(@"D:\DicomTest\ZHOUNING");
             //var dir = new DirectoryInfo(@"D:\DicomTest\BigTest");
             var fileInfos = dir.GetFiles();
             long totalSize = 0;

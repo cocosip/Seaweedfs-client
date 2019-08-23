@@ -188,7 +188,7 @@ namespace Seaweedfs.Client.Rest
         /// <returns><see cref="Seaweedfs.Client.Rest.DeleteFileResponse"/></returns>
         public async Task<DeleteFileResponse> DeleteFile(string fid)
         {
-            if (_option.EnableJwt)
+            if (_option.RestOption.EnableJwt)
             {
                 var lookupRequest = new LookupRequest(fid);
                 await _seaweedfsExecuter.ExecuteAsync(lookupRequest);
@@ -216,7 +216,7 @@ namespace Seaweedfs.Client.Rest
         {
             var connection = _connectionManager.GetMasterConnection();
             var connectionAddress = connection.ConnectionAddress;
-            var masterUrl = UrlUtil.ToUrl(_option.Scheme, connectionAddress.IPAddress, connectionAddress.Port);
+            var masterUrl = UrlUtil.ToUrl(_option.RestOption.Scheme, connectionAddress.IPAddress, connectionAddress.Port);
             return $"{masterUrl}/{fid}";
         }
 

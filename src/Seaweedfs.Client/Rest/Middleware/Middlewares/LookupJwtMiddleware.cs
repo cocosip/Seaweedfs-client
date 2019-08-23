@@ -25,7 +25,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public async Task InvokeAsync(RestExecuteContext context)
         {
-            if (!_option.EnableJwt)
+            if (!_option.RestOption.EnableJwt)
             {
                 await _next.Invoke(context);
                 return;
@@ -40,7 +40,7 @@ namespace Seaweedfs.Client.Rest
                     var authentication = context.Response.Headers.FirstOrDefault(x => x.Name.Equals("Authorization", StringComparison.OrdinalIgnoreCase));
                     if (lookupRequest.IsRead.HasValue && lookupRequest.IsRead.Value)
                     {
-                        if (_option.EnableReadJwt)
+                        if (_option.RestOption.EnableReadJwt)
                         {
                             //添加到Read Jwt管理器
                             _jwtManager.AddReadJwt(context.Request.Fid, authentication.Value.ToString());

@@ -23,7 +23,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public async Task InvokeAsync(RestExecuteContext context)
         {
-            if (!_option.EnableJwt)
+            if (!_option.RestOption.EnableJwt)
             {
                 await _next.Invoke(context);
                 return;

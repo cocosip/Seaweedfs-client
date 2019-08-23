@@ -1,4 +1,4 @@
-namespace Seaweedfs.Client.Rest
+namespace Seaweedfs.Client.Util
 {
 
     /// <summary>连接地址实体

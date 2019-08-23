@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MasterPb;
-using VolumeServerPb;
+﻿using MasterPb;
 namespace Seaweedfs.Client.Grpc
 {
-    /// <summary>Grpc管道管理
+    /// <summary>Grpc客户端管理
     /// </summary>
     public interface IGrpcClientManager
     {
@@ -13,8 +9,12 @@ namespace Seaweedfs.Client.Grpc
         /// </summary>
         Seaweed.SeaweedClient GetMasterClient();
 
-        /// <summary>获取Volume Grpc客户端
+        /// <summary>运行
         /// </summary>
-        VolumeServer.VolumeServerClient GetVolumeClient();
+        void Start();
+
+        /// <summary>停止
+        /// </summary>
+        void Shutdown();
     }
 }

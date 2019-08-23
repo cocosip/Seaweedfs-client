@@ -1,3 +1,5 @@
+using Seaweedfs.Client.Util;
+
 namespace Seaweedfs.Client.Rest
 {
     /// <summary>连接工厂

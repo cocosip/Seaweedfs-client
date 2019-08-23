@@ -18,7 +18,7 @@ namespace Seaweedfs.Client.Rest
         private readonly SeaweedfsOption _option;
         private readonly IConnectionFactory _connectionFactory;
         private readonly ISeaweedfsExecuter _seaweedfsExecuter;
-        private Connection _masterConnection;
+        private Connection _masterLeaderConnection = null;
 
         /// <summary>Volume连接
         /// </summary>
@@ -47,7 +47,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         public Connection GetMasterConnection()
         {
-            return _masterConnection;
+            return _masterLeaderConnection;
         }
 
         /// <summary>根据AssignFileKeyResponse获取Volume连接
@@ -130,7 +130,7 @@ namespace Seaweedfs.Client.Rest
             }
 
             //使用第一台服务器作为Leader
-            _masterConnection = CreateMasterConnection();
+            _masterLeaderConnection = CreateMasterConnection();
             //Master Leader同步
             StartSyncMasterLeaderTask();
             _isRunning = true;
@@ -150,7 +150,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         private Connection CreateMasterConnection(ConnectionAddress exceptMaster = null)
         {
-            var masterServers = _option.Masters;
+            var masterServers = _option.RestOption.Masters;
             if (exceptMaster != null)
             {
                 masterServers = masterServers.Where(x => x.IPAddress != exceptMaster.IPAddress && x.Port != exceptMaster.Port).ToList();
@@ -173,7 +173,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         private void StartSyncMasterLeaderTask()
         {
-            _scheduleService.StartTask(SeaweedfsConsts.ScheduleTaskName.SyncMasterLeader, SyncMasterLeader, 1000, _option.SyncMasterLeaderInterval * 1000);
+            _scheduleService.StartTask(SeaweedfsConsts.ScheduleTaskName.SyncMasterLeader, SyncMasterLeader, 1000, _option.RestOption.SyncMasterLeaderInterval * 1000);
         }
 
         /// <summary>结束同步Master中Leader的任务
@@ -187,7 +187,7 @@ namespace Seaweedfs.Client.Rest
         /// </summary>
         private void SyncMasterLeader()
         {
-            if (_masterConnection == null)
+            if (_masterLeaderConnection == null)
             {
                 _logger.LogError("同步MasterLeader出错,当前MasterConnection为空.");
                 return;
@@ -204,18 +204,18 @@ namespace Seaweedfs.Client.Rest
                 if (!clusterStatus.IsSuccessful)
                 {
                     //如果不成功,Master可能废了,需要构建新的
-                    _masterConnection = CreateMasterConnection(_masterConnection.ConnectionAddress);
+                    _masterLeaderConnection = CreateMasterConnection(_masterLeaderConnection.ConnectionAddress);
                     SyncMasterLeader();
                     return;
                 }
                 //判断集群中的Master服务器的Leader是否发生了改变
-                if (!clusterStatus.IsLeader || clusterStatus.Leader != _masterConnection.ConnectionAddress.ToString())
+                if (!clusterStatus.IsLeader || clusterStatus.Leader != _masterLeaderConnection.ConnectionAddress.ToString())
                 {
                     //更新当前Master连接
                     lock (SyncObject)
                     {
                         var connectionAddress = new ConnectionAddress(clusterStatus.Leader);
-                        _masterConnection = _connectionFactory.CreateConnection(connectionAddress, ConnectionType.Master);
+                        _masterLeaderConnection = _connectionFactory.CreateConnection(connectionAddress, ConnectionType.Master);
                     }
                 }
             }

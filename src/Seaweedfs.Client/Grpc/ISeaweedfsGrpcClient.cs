@@ -50,10 +50,10 @@ namespace Seaweedfs.Client.Grpc
         /// </summary>
         Task<MasterConfiguration> GetMasterConfiguration();
 
-        /// <summary>批量删除文件
-        /// </summary>
-        /// <param name="fileIds">文件Fid集合</param>
-        /// <returns></returns>
-        Task<List<BatchDelete>> BatchDelete(params string[] fileIds);
+        ///// <summary>批量删除文件
+        ///// </summary>
+        ///// <param name="fileIds">文件Fid集合</param>
+        ///// <returns></returns>
+        //Task<List<BatchDelete>> BatchDelete(params string[] fileIds);
     }
 }

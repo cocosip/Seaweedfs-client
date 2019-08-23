@@ -32,45 +32,59 @@ namespace Seaweedfs.Client
             doc.Load(reader);
             XmlNode root = doc.SelectSingleNode("Seaweedfs");
 
-            //Masters节点
-            var mastersNode = root.SelectSingleNode("Masters");
-            //查询全部的Master节点
-            var masterNodes = mastersNode.SelectNodes("Master");
-            foreach (XmlNode masterNode in masterNodes)
+            //Rest节点
+            var restNode = root.SelectSingleNode("RestOption");
+            var masterNode = restNode.SelectSingleNode("Masters");
+            var serverAddressNodes = masterNode.SelectNodes("ServerAddress");
+            foreach (XmlNode serverAddressNode in serverAddressNodes)
             {
-                var ipAddress = masterNode.SelectSingleNode("IPAddress").InnerText;
-                var port = int.Parse(masterNode.SelectSingleNode("Port").InnerText);
-                option.Masters.Add(new MasterServer(ipAddress, port));
+                var ipAddress = serverAddressNode.SelectSingleNode("IPAddress").InnerText;
+                var port = int.Parse(serverAddressNode.SelectSingleNode("Port").InnerText);
+                option.RestOption.Masters.Add(new ServerAddress(ipAddress, port));
             }
             //架构,http/https
-            option.Scheme = root.SelectSingleNode("Scheme").InnerText;
+            option.RestOption.Scheme = restNode.SelectSingleNode("Scheme").InnerText;
             //Master同步时间间隔
-            option.SyncMasterLeaderInterval = int.Parse(root.SelectSingleNode("SyncMasterLeaderInterval").InnerText);
+            option.RestOption.SyncMasterLeaderInterval = int.Parse(restNode.SelectSingleNode("SyncMasterLeaderInterval").InnerText);
             //是否启用jwt
-            option.EnableJwt = bool.Parse(root.SelectSingleNode("EnableJwt").InnerText);
+            option.RestOption.EnableJwt = bool.Parse(restNode.SelectSingleNode("EnableJwt").InnerText);
             //Jwt超时时间
-            option.JwtTimeoutSeconds = int.Parse(root.SelectSingleNode("JwtTimeoutSeconds").InnerText);
-
+            option.RestOption.JwtTimeoutSeconds = int.Parse(restNode.SelectSingleNode("JwtTimeoutSeconds").InnerText);
             //是否启用读取文件jwt
-            option.EnableReadJwt = bool.Parse(root.SelectSingleNode("EnableReadJwt").InnerText);
+            option.RestOption.EnableReadJwt = bool.Parse(restNode.SelectSingleNode("EnableReadJwt").InnerText);
             //读文件Jwt
-            option.ReadJwtTimeoutSeconds = int.Parse(root.SelectSingleNode("ReadJwtTimeoutSeconds").InnerText);
+            option.RestOption.ReadJwtTimeoutSeconds = int.Parse(restNode.SelectSingleNode("ReadJwtTimeoutSeconds").InnerText);
+
+            //grpcNode
+            var grpcNode = root.SelectSingleNode("GrpcOption");
+            //Grpc Masters节点
+            var grpcMasterNode = grpcNode.SelectSingleNode("GrpcMasters");
+            //查询全部的Master节点
+            var grpcServerAddressNodes = grpcMasterNode.SelectNodes("ServerAddress");
+            foreach (XmlNode grpcServerAddressNode in grpcServerAddressNodes)
+            {
+                var ipAddress = grpcServerAddressNode.SelectSingleNode("IPAddress").InnerText;
+                var port = int.Parse(grpcServerAddressNode.SelectSingleNode("Port").InnerText);
+                option.GrpcOption.GrpcMasters.Add(new ServerAddress(ipAddress, port));
+            }
+            //Grpc同步MasterLeader时间间隔
+            option.GrpcOption.SyncGrpcMasterLeaderInterval = int.Parse(grpcNode.SelectSingleNode("SyncGrpcMasterLeaderInterval").InnerText);
             //是否启用Grpc Tls
-            option.EnableTls = bool.Parse(root.SelectSingleNode("EnableTls").InnerText);
+            option.GrpcOption.EnableTls = bool.Parse(grpcNode.SelectSingleNode("EnableTls").InnerText);
             //Grpc CA证书位置
-            option.Ca = root.SelectSingleNode("Ca").InnerText;
+            option.GrpcOption.Ca = grpcNode.SelectSingleNode("Ca").InnerText;
             //Master证书位置
-            option.MasterCert = root.SelectSingleNode("MasterCert").InnerText;
+            option.GrpcOption.MasterCert = grpcNode.SelectSingleNode("MasterCert").InnerText;
             //Master证书Key
-            option.MasterKey = root.SelectSingleNode("MasterKey").InnerText;
+            option.GrpcOption.MasterKey = grpcNode.SelectSingleNode("MasterKey").InnerText;
             //Volume证书位置
-            option.VolumeCert = root.SelectSingleNode("VolumeCert").InnerText;
+            option.GrpcOption.VolumeCert = grpcNode.SelectSingleNode("VolumeCert").InnerText;
             //Volume证书Key
-            option.VolumeKey = root.SelectSingleNode("VolumeKey").InnerText;
+            option.GrpcOption.VolumeKey = grpcNode.SelectSingleNode("VolumeKey").InnerText;
             //Filer证书位置
-            option.FilerCert = root.SelectSingleNode("FilerCert").InnerText;
+            option.GrpcOption.FilerCert = grpcNode.SelectSingleNode("FilerCert").InnerText;
             //Filer证书Key
-            option.FilerKey = root.SelectSingleNode("FilerKey").InnerText;
+            option.GrpcOption.FilerKey = grpcNode.SelectSingleNode("FilerKey").InnerText;
 
             //关闭读取流
             reader.Close();
@@ -86,91 +100,119 @@ namespace Seaweedfs.Client
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("<Seaweedfs>");
-                sb.AppendLine(ParseNote("Master信息,可以配置多台"));
+                sb.AppendLine(ParseNote("RestOption配置"));
+                sb.AppendLine("<RestOption>");
                 sb.AppendLine("<Masters>");
-                foreach (var master in option.Masters)
+                foreach (var serverAddress in option.RestOption.Masters)
                 {
-                    sb.AppendLine("<Master>");
+                    sb.AppendLine("<ServerAddress>");
                     sb.Append("<IPAddress>");
-                    sb.Append(master.IPAddress);
+                    sb.Append(serverAddress.IPAddress);
                     sb.AppendLine("</IPAddress>");
 
                     sb.Append("<Port>");
-                    sb.Append(master.Port);
+                    sb.Append(serverAddress.Port);
                     sb.AppendLine("</Port>");
 
-                    sb.AppendLine("</Master>");
-
+                    sb.AppendLine("</ServerAddress>");
                 }
                 sb.AppendLine("</Masters>");
 
                 //架构
                 sb.Append("<Schema>");
-                sb.AppendLine(option.Scheme);
+                sb.AppendLine(option.RestOption.Scheme);
                 sb.AppendLine("</Schema>");
 
                 //Master Leader同步时间间隔
                 sb.Append("<SyncMasterLeaderInterval>");
-                sb.AppendLine(option.SyncMasterLeaderInterval.ToString());
+                sb.AppendLine(option.RestOption.SyncMasterLeaderInterval.ToString());
                 sb.AppendLine("</SyncMasterLeaderInterval>");
 
                 //Master Leader同步时间间隔
                 sb.Append("<SyncMasterLeaderInterval>");
-                sb.AppendLine(option.SyncMasterLeaderInterval.ToString());
+                sb.AppendLine(option.RestOption.SyncMasterLeaderInterval.ToString());
                 sb.AppendLine("</SyncMasterLeaderInterval>");
 
                 //是否开启Jwt认证
                 sb.Append("<EnableJwt>");
-                sb.AppendLine(option.EnableJwt.ToString());
+                sb.AppendLine(option.RestOption.EnableJwt.ToString());
                 sb.AppendLine("</EnableJwt>");
 
                 //Jwt超时时间
                 sb.Append("<JwtTimeoutSeconds>");
-                sb.AppendLine(option.JwtTimeoutSeconds.ToString());
+                sb.AppendLine(option.RestOption.JwtTimeoutSeconds.ToString());
                 sb.AppendLine("</JwtTimeoutSeconds>");
 
                 //是否开启读取Jwt认证
                 sb.Append("<EnableReadJwt>");
-                sb.AppendLine(option.EnableReadJwt.ToString());
+                sb.AppendLine(option.RestOption.EnableReadJwt.ToString());
                 sb.AppendLine("</EnableReadJwt>");
 
                 //读取的Jwt超时时间
                 sb.Append("<ReadJwtTimeoutSeconds>");
-                sb.AppendLine(option.ReadJwtTimeoutSeconds.ToString());
+                sb.AppendLine(option.RestOption.ReadJwtTimeoutSeconds.ToString());
                 sb.AppendLine("</ReadJwtTimeoutSeconds>");
+                //RestOption End
+                sb.AppendLine("</RestOption>");
+
+
+                //GrpcOption
+                sb.AppendLine("<GrpcOption>");
+                sb.AppendLine("<GrpcMasters>");
+                foreach (var serverAddress in option.GrpcOption.GrpcMasters)
+                {
+                    sb.AppendLine("<ServerAddress>");
+                    sb.Append("<IPAddress>");
+                    sb.Append(serverAddress.IPAddress);
+                    sb.AppendLine("</IPAddress>");
+
+                    sb.Append("<Port>");
+                    sb.Append(serverAddress.Port);
+                    sb.AppendLine("</Port>");
+
+                    sb.AppendLine("</ServerAddress>");
+                }
+                sb.AppendLine("</GrpcMasters>");
+
+                //Grpc 同步MasterLeader时间间隔
+                sb.Append("<SyncGrpcMasterLeaderInterval>");
+                sb.AppendLine(option.GrpcOption.SyncGrpcMasterLeaderInterval.ToString());
+                sb.AppendLine("</SyncGrpcMasterLeaderInterval>");
 
                 //是否启用Grpc Tls
                 sb.Append("<EnableTls>");
-                sb.AppendLine(option.EnableJwt.ToString());
+                sb.AppendLine(option.GrpcOption.EnableTls.ToString());
                 sb.AppendLine("</EnableTls>");
                 //Ca证书位置
                 sb.Append("<Ca>");
-                sb.AppendLine(option.Ca.ToString());
+                sb.AppendLine(option.GrpcOption.Ca.ToString());
                 sb.AppendLine("</Ca>");
                 //Master证书位置
                 sb.Append("<MasterCert>");
-                sb.AppendLine(option.MasterCert);
+                sb.AppendLine(option.GrpcOption.MasterCert);
                 sb.AppendLine("</MasterCert>");
                 //Master证书Key
                 sb.Append("<MasterKey>");
-                sb.AppendLine(option.MasterKey);
+                sb.AppendLine(option.GrpcOption.MasterKey);
                 sb.AppendLine("</MasterKey>");
                 //Volume证书位置
                 sb.Append("<VolumeCert>");
-                sb.AppendLine(option.VolumeCert);
+                sb.AppendLine(option.GrpcOption.VolumeCert);
                 sb.AppendLine("</VolumeCert>");
                 //Volume证书Key
                 sb.Append("<VolumeKey>");
-                sb.AppendLine(option.VolumeKey);
+                sb.AppendLine(option.GrpcOption.VolumeKey);
                 sb.AppendLine("</VolumeKey>");
                 //Filer证书位置
                 sb.Append("<FilerCert>");
-                sb.AppendLine(option.FilerCert);
+                sb.AppendLine(option.GrpcOption.FilerCert);
                 sb.AppendLine("</FilerCert>");
                 //Filer证书Key
                 sb.Append("<FilerKey>");
-                sb.AppendLine(option.FilerKey);
+                sb.AppendLine(option.GrpcOption.FilerKey);
                 sb.AppendLine("</FilerKey>");
+                //GrpcOption End
+                sb.AppendLine("</GrpcOption>");
 
                 sb.AppendLine("</Seaweedfs>");
                 return sb.ToString();

@@ -225,24 +225,24 @@ namespace Seaweedfs.Client.Grpc
             return new MasterConfiguration(response.MetricsAddress, (int)response.MetricsIntervalSeconds);
         }
 
-        /// <summary>批量删除文件
-        /// </summary>
-        /// <param name="fileIds">文件Fid集合</param>
-        /// <returns></returns>
-        public async Task<List<BatchDelete>> BatchDelete(params string[] fileIds)
-        {
-            var client = _clientManager.GetVolumeClient();
-            var request = new VolumeServerPb.BatchDeleteRequest();
-            request.FileIds.Add(fileIds);
-            var response = await client.BatchDeleteAsync(request);
-            return response.Results.Select(x => new BatchDelete()
-            {
-                FileId = x.FileId,
-                Size = (int)x.Size,
-                Status = (int)x.Status,
-                Version = (int)x.Version
-            }).ToList();
-        }
+        ///// <summary>批量删除文件
+        ///// </summary>
+        ///// <param name="fileIds">文件Fid集合</param>
+        ///// <returns></returns>
+        //public async Task<List<BatchDelete>> BatchDelete(params string[] fileIds)
+        //{
+        //    var client = _clientManager.GetVolumeClient();
+        //    var request = new VolumeServerPb.BatchDeleteRequest();
+        //    request.FileIds.Add(fileIds);
+        //    var response = await client.BatchDeleteAsync(request);
+        //    return response.Results.Select(x => new BatchDelete()
+        //    {
+        //        FileId = x.FileId,
+        //        Size = (int)x.Size,
+        //        Status = (int)x.Status,
+        //        Version = (int)x.Version
+        //    }).ToList();
+        //}
 
     }
 }

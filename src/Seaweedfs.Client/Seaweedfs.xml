@@ -1,38 +1,56 @@
 <Seaweedfs>
-  <![CDATA[Master节点配置信息]]>
-  <Masters>
-    <Master>
-      <IPAddress>127.0.0.1</IPAddress>
-      <Port>9333</Port>
-    </Master>
-  </Masters>
-  <![CDATA[架构]]>
-  <Scheme>http</Scheme>
-  <![CDATA[同步Master中Leader的时间间隔,以s为单位]]>
-  <SyncMasterLeaderInterval>30</SyncMasterLeaderInterval>
-  <![CDATA[是否开启Jwt认证]]>
-  <EnableJwt>true</EnableJwt>
-  <![CDATA[Jwt超时时间,默认10s]]>
-  <JwtTimeoutSeconds>10</JwtTimeoutSeconds>
-  <![CDATA[是否开启读取文件Jwt认证]]>
-  <EnableReadJwt>false</EnableReadJwt>
-  <![CDATA[读文件Jwt超时时间,默认10s]]>
-  <ReadJwtTimeoutSeconds>10</ReadJwtTimeoutSeconds>
-  <![CDATA[是否启用Grpc Tls认证]]>
-  <EnableTls>false</EnableTls>
-  <![CDATA[CA证书位置]]>
-  <Ca></Ca>
-  <![CDATA[Master证书位置]]>
-  <MasterCert></MasterCert>
-  <![CDATA[Master证书Key]]>
-  <MasterKey></MasterKey>
-  <![CDATA[Volume证书位置]]>
-  <VolumeCert></VolumeCert>
-  <![CDATA[Volume证书Key]]>
-  <VolumeKey></VolumeKey>
-  <![CDATA[Filer证书位置]]>
-  <FilerCert></FilerCert>
-  <![CDATA[Filer证书Key]]>
-  <FilerKey></FilerKey>
+  <![CDATA[Rest配置]]>
+  <RestOption>
+    <![CDATA[Master节点配置信息]]>
+    <Masters>
+      <ServerAddress>
+        <IPAddress>127.0.0.1</IPAddress>
+        <Port>9333</Port>
+      </ServerAddress>
+    </Masters>
+    <![CDATA[架构]]>
+    <Scheme>http</Scheme>
+    <![CDATA[同步Master中Leader的时间间隔,以s为单位]]>
+    <SyncMasterLeaderInterval>30</SyncMasterLeaderInterval>
+    <![CDATA[是否开启Jwt认证]]>
+    <EnableJwt>false</EnableJwt>
+    <![CDATA[Jwt超时时间,默认10s]]>
+    <JwtTimeoutSeconds>10</JwtTimeoutSeconds>
+    <![CDATA[是否开启读取文件Jwt认证]]>
+    <EnableReadJwt>false</EnableReadJwt>
+    <![CDATA[读文件Jwt超时时间,默认10s]]>
+    <ReadJwtTimeoutSeconds>10</ReadJwtTimeoutSeconds>
+  </RestOption>
+  
+  <![CDATA[Grpc配置]]>
+  <GrpcOption>
+    <![CDATA[Grpc Master节点]]>
+    <GrpcMasters>
+      <ServerAddress>
+        <IPAddress>127.0.0.1</IPAddress>
+        <Port>19333</Port>
+      </ServerAddress>
+    </GrpcMasters>
+    
+    <![CDATA[Grpc同步Master中Leader的时间间隔,以s为单位]]>
+    <SyncGrpcMasterLeaderInterval>30</SyncGrpcMasterLeaderInterval>
+    <![CDATA[是否启用Grpc Tls认证]]>
+    <EnableTls>false</EnableTls>
+    <![CDATA[CA证书位置]]>
+    <Ca></Ca>
+    <![CDATA[Master证书位置]]>
+    <MasterCert></MasterCert>
+    <![CDATA[Master证书Key]]>
+    <MasterKey></MasterKey>
+    <![CDATA[Volume证书位置]]>
+    <VolumeCert></VolumeCert>
+    <![CDATA[Volume证书Key]]>
+    <VolumeKey></VolumeKey>
+    <![CDATA[Filer证书位置]]>
+    <FilerCert></FilerCert>
+    <![CDATA[Filer证书Key]]>
+    <FilerKey></FilerKey>
+  </GrpcOption>
+
 
 </Seaweedfs>
