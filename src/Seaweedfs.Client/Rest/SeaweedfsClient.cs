@@ -204,7 +204,10 @@ namespace Seaweedfs.Client.Rest
         /// <returns><see cref="Seaweedfs.Client.Rest.VolumeServerStatusResponse"/></returns>
         public async Task<VolumeServerStatusResponse> GetVolumeServerStatus(string url)
         {
-            var request = new VolumeServerStatusRequest();
+            var request = new VolumeServerStatusRequest()
+            {
+                AssignServer = url
+            };
             return await _seaweedfsExecuter.ExecuteAsync(request);
         }
 
