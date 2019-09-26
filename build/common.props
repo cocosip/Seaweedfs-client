@@ -4,7 +4,6 @@
     <LangVersion>latest</LangVersion>
     <Authors>virtual</Authors>
     <Product>Seaweedfs</Product>
-    <PackageIconUrl>https://github.com/cocosip/Seaweedfs</PackageIconUrl>
     <PackageProjectUrl>https://github.com/cocosip/Seaweedfs</PackageProjectUrl>
     <PackageLicense>https://github.com/cocosip/Seaweedfs/blob/master/LICENSE</PackageLicense>
     <RepositoryType>git</RepositoryType>
